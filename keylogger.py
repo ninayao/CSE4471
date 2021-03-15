@@ -62,7 +62,7 @@ class Keylogger:
 # <NONE> --- Records every keypress as expected
 #
 # NOTE: Currently the only way to stop keylogging is pressing CTRL+C in terminal
-# NOTE: You must press "a" last to write to fill
+# NOTE: You must press "a" last to write
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         mode = sys.argv[1]
