@@ -1,6 +1,5 @@
 import sys
 import time
-from CSE4471.keylogger import Keylogger
 import string
 
 class Game:
