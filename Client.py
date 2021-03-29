@@ -35,22 +35,23 @@ class Player:
 
     def buy_powerup(self, power):
         #and self.score >= 100\
+        self.score = self.score - 100
         if power == "A":
-            print("Changing mode to none")
+            print("Changing mode to NONE for 5 seconds")
             file = open("powerup.txt", "w")
             file.write("A")
             file.close()
         elif power == "B":
-            print("Decreasing probabilty of flipped characters to 1/20")
+            print("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
             file = open("powerup.txt", "w")
             file.write("B") 
             file.close()
         elif power == "C":
-            print("Slowing down text")
+            print("Slowing down text for 5 seconds")
             file = open("powerup.txt", "w")
             file.write("C")
             file.close()
-        self.score = self.score - 100
+        print(self.score)
     def clear_powerup(self):
         open("powerup.txt", "w").close()
 
@@ -65,12 +66,13 @@ class Player:
 if __name__ == '__main__':
 
     guess_number = 0
-    username = input("input username: \n")
+    username = input("Input username: \n")
     p1 = Player(username)
+    print(p1.score)
     g1 = Game("sampletext.txt")
     start_time = None
     while(1):
-        user_input = input("input index(starting at 0) followed by word guess or buy powerup: \n")
+        user_input = input("Input index(starting at 0) followed by word guess or buy a powerup (A, B, C): \n")
         if user_input[0].isnumeric():
             result = g1.process_user_input(user_input, guess_number)
             if result > 0:
@@ -81,7 +83,7 @@ if __name__ == '__main__':
              #   p1.clear_powerup()
         else:
             if p1.check_powerup():
-                print("Cannot use more than 1 powerup\n")
+                print("Cannot use more than 1 powerup simultaneously\n")
             elif p1.score < 100:
                 print("Not enough points to buy a powerup\n")
             else:
