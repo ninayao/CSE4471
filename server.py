@@ -63,3 +63,5 @@ if __name__ == '__main__':
         #print(speed)
         #print(k.get_mode())
         #print(k.get_rand())
+    file = open("powerup.txt", "w")
+    file.write("END")    
