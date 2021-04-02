@@ -18,7 +18,7 @@ def countdown(count):
         # call countdown again after 1000ms (1s)
         root.after(1000, countdown, count+1)
 
-def get_name():
+def get_name(event=None):
     #gets the name entered from the first screen
     global name 
     name = name_var.get()
@@ -41,8 +41,11 @@ def instruction_page():
     beginButton = tk.Button(root, command=set_up_gui, text="start the game")
     beginButton.grid(row=3)
     beginButton.place(relx=0.5, rely=0.92,anchor=CENTER)
+    root.bind('<Return>',set_up_gui)
 
-def set_up_gui():
+
+def set_up_gui(event=None):
+    global outputTxt
     #get rid of instruction widgets
     greeting.destroy()
     instruc.destroy()
@@ -64,16 +67,18 @@ def set_up_gui():
     textEntry = tk.Entry(root, textvariable=text_var)
     textEntry.grid(row=4, column=2, columnspan=2, sticky=W)
     submitBtn = tk.Button(root, command=word_entered, text="submit").grid(row=4, column=4)
+    root.bind('<Return>',word_entered)
     output.set("Enter the word at position "+str(wordNum)+"!")
     clock = tk.Label(root, textvariable=clock_time)
     clock.grid(row=6, column=0)
     countdown(0)
-    outputTxt = tk.Label(root, textvariable=output, bg="light blue").grid(row=6, column=1, columnspan=4)
+    outputTxt = tk.Label(root, textvariable=output, bg="light blue")
+    outputTxt.grid(row=6, column=1, columnspan=4)
     root.grid_rowconfigure(1, minsize=20) 
     root.grid_rowconfigure(3, minsize=20)  
     root.grid_rowconfigure(5, minsize=20)  
 
-def word_entered():
+def word_entered(event=None):
     #gets the word the user guessed
     input = text_var.get()
     print(input)
@@ -88,11 +93,13 @@ def process_user_input(user_input):
     if word_guess == text_dict[index]:
         guessed_indices.append(index)
         output.set("Correct!")
+        outputTxt.config(fg="green3")
         mod_score(len(word_guess))
         mod_word_num()
         return len(word_guess)
     else:
         output.set("Incorrect :(")
+        outputTxt.config(fg="red2")
         return 0
 
 def mod_score(score_modifier):
@@ -118,7 +125,8 @@ def clear_powerup():
 
 def choose_pwr_1():
     global score
-    if(not check_powerup()):
+    outputTxt.config(fg="black")
+    if(check_powerup()):
         output.set("You can't use more than 1 power up at a time!")
     elif score<900:
         output.set("You don't have enough points!")
@@ -132,7 +140,8 @@ def choose_pwr_1():
 
 def choose_pwr_2():
     global score
-    if(not check_powerup()):
+    outputTxt.config(fg="black")
+    if(check_powerup()):
         output.set("You can't use more than 1 power up at a time!")
     elif score<300:
         output.set("You don't have enough points!")
@@ -146,7 +155,8 @@ def choose_pwr_2():
 
 def choose_pwr_3():
     global score
-    if(not check_powerup()):
+    outputTxt.config(fg="black")
+    if(check_powerup()):
         output.set("You can't use more than 1 power up at a time!")
     elif score<600:
         output.set("You don't have enough points!")
@@ -191,6 +201,8 @@ nameEntry.place(relx=0.5, rely=0.45,anchor=CENTER)
 nameButton = tk.Button(root, command=get_name, text="submit")
 nameButton.grid(row=3)
 nameButton.place(relx=0.5, rely=0.55,anchor=CENTER)
+root.bind('<Return>',get_name)
+
 
 #start game loop
 root.mainloop()
