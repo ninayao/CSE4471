@@ -2,6 +2,8 @@ import sys
 import time
 import string
 import os
+import socket
+
 
 class Game:
     text_dict = []
@@ -72,12 +74,19 @@ class Player:
             b = False
         return b
 
+def prompt_connection():
+    address = input("Input address to connect to: \n")
+    port = input("Input port to connect to:")
+    return address, int(port) 
 
 if __name__ == '__main__':
 
     guess_number = 0
     username = input("Input username: \n")
     p1 = Player(username)
+    s = socket.socket()
+    address_with_port = prompt_connection()
+    s.connect(address_with_port)
     print(p1.score)
     g1 = Game("sampletext.txt")
     start_time = None
@@ -90,6 +99,8 @@ if __name__ == '__main__':
                 p1.mod_score(result)
             guess_number += 1
             print(str(p1.score))
+            s.sendall(bytes(p1.score))
+            print(s.recv(1024).decode())
         else:
             if p1.check_powerup():
                 print("Cannot use more than 1 powerup simultaneously\n")
@@ -102,3 +113,4 @@ if __name__ == '__main__':
         #     print("Unacceptable input")
     print("Game over \nScore: ", p1.score)
     open("powerup.txt", "w").close()
+    s.close()

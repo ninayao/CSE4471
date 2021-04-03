@@ -2,6 +2,7 @@ import sys
 import time
 from keylogger import Keylogger
 import os
+import socket
 
 
 #def keylog_from_text(text):
@@ -25,13 +26,23 @@ def print_text(speed, text):
 
 
 if __name__ == '__main__':
-
+    connections = []
     if len(sys.argv) > 1:
         mode = sys.argv[1]
     else:
         mode = "random"
     k = Keylogger(mode)
     string_from_file = produce_text()
+    port = input("Input the port to open")
+    s = socket.socket()
+    s.bind(('', int(port)))
+    print("Socket bound to ", port)
+    s.listen(5)
+    # Modify to add more players
+    while len(connections) < 1:
+        c, addr = s.accept()   
+        connections.append(c)
+        print("Got connection from " + str(addr))
     speed = 0.2
     start = None
     p_bool = False
@@ -60,6 +71,12 @@ if __name__ == '__main__':
                 p_bool = False        
         c = k.simulated_key_pressed(char)
         print_text(speed, c)
+        for client in connections:
+
+            data = client.recv(28).decode()
+            print("data recieved")
+            send_data = "data sent"
+            client.sendall(bytes(send_data, 'utf-8'))
         #print(speed)
         #print(k.get_mode())
         #print(k.get_rand())
