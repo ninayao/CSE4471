@@ -23,6 +23,10 @@ def print_text(speed, text):
         sys.stdout.flush()
         time.sleep(speed)
     return text
+def prompt_connection():
+    address = input("Input address to connect to: \n")
+    port = input("Input port to connect to:")
+    return address, int(port) 
 
 if __name__ == '__main__':
 
@@ -34,8 +38,8 @@ if __name__ == '__main__':
     string_from_file = produce_text()
     speed = 0.2
 
-    host = 'localhost'
-    port = 8000
+    host, port = prompt_connection()
+    
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(2)
