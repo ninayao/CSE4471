@@ -17,7 +17,7 @@ class Keylogger:
         self.mode = change
     
     def change_rand(self, random):
-        self.rand = random.randint(1, 26)
+        self.rand = random
 
     def get_mode(self):
         return self.mode

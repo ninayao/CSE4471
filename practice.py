@@ -11,6 +11,7 @@ guessed_indices = []
 name = ""
 wordNum = 1
 score = 0
+start = None
 
 def countdown(count):
     global score
@@ -43,7 +44,7 @@ def instruction_page():
     greeting = tk.Label(root, text="Hi "+name+"!", bg="light blue")
     greeting.grid(row=0)
     greeting.place(relx=0.5, rely=0.10, anchor=CENTER)
-    instruc = tk.Label(root, text="Instructions:\n\nOn the next screen, you will see text printing with multiple errors throughout. Your goal is to decipher what the text is supposed to say, and enter it word by word.\n\nThere will be a text entry box where you will enter the indicated word. When you hit submit, you will be told whether your guess was correct or not, and your score will be adjusted accordingly.\n\nWhen enough points have been acquired, you may purchase a hints or skips by clicking the buttons. \n\n\nGood Luck!", bg="light blue", wraplength=420)
+    instruc = tk.Label(root, text="Instructions:\n\nOn the next screen, you will see text printing with multiple errors throughout. Your goal is to decipher what the text is supposed to say, and enter it word by word.\n\nThere will be a text entry box where you will enter the indicated word. When you hit submit, you will be told whether your guess was correct or not, and your score will be adjusted accordingly. You also have the option to skip a word and move on to the next.\n\nWhen enough points have been acquired, you may purchase power-up by clicking the buttons labeled \"pwr 1\" and \"pwr 2\". The power-ups will give you an advantage by decreasing the amount of bugs you encounter. \n\n\nGood Luck!", bg="light blue", wraplength=420)
     instruc.grid(row=1)
     instruc.place(relx=0.5, rely=0.50,anchor=CENTER)
     beginButton = tk.Button(root, command=set_up_gui, text="start the game")
@@ -67,9 +68,9 @@ def set_up_gui(event=None):
 
     yourScore = tk.Label(root, textvariable=scr).grid(row=0, column=0, sticky=W)
     opsScore = tk.Label(root, text="Op Score: 0").grid(row=0, column=1, sticky=W)
-    pwr1 = tk.Button(root, command= choose_pwr_1, text="skip").grid(row=0, column=2)
-    pwr2 = tk.Button(root, command= choose_pwr_2, text="hint").grid(row=0, column=3)
-    #pwr3 = tk.Button(root, command= lambda:choose_pwr_3(k), text="hint").grid(row=0, column=4)
+    pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
+    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="pwr 1").grid(row=0, column=3)
+    pwr3 = tk.Button(root, command= lambda:choose_pwr_3(k), text="pwr 2").grid(row=0, column=4)
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
     tk.Label(root, text="Your guess:", bg="light blue").grid(row=4, column=1, sticky=W)
@@ -78,10 +79,12 @@ def set_up_gui(event=None):
     
     
     #print out text by char
-    canvas = tk.Canvas(root, width=650, height=200)
+    #canvas = tk.Canvas(root, width=650, height=200)
     canvas.grid(row=3, column=0, columnspan = 5, sticky = tk.W+tk.E)
-    canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
+    #canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
     test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
+    print_text(k, test_string, "")
+    '''
     delta= 200
     delay = 0
     s = ""
@@ -90,10 +93,8 @@ def set_up_gui(event=None):
         s = s + new_c
         update_text = lambda s=s: canvas.itemconfigure(canvas_text, text=s)
         canvas.after(delay, update_text)
-        delay += delta
-        #canvas.itemconfigure(canvas_text, text=s)
-        #canvas.after(200, update_text(canvas, c, k, canvas_text, s))    
-    
+        delay += delta 
+    '''
     root.geometry("700x500")
     root.configure(bg="light blue")
     textEntry = tk.Entry(root, textvariable=text_var)
@@ -112,6 +113,24 @@ def set_up_gui(event=None):
     root.grid_rowconfigure(1, minsize=20) 
     root.grid_rowconfigure(3, minsize=20)  
     root.grid_rowconfigure(5, minsize=20)  
+
+
+def print_text(k, test_string, s):
+    global start
+    end = time.time()
+    if start is not None:
+        elapsed=end - start
+        if elapsed >= 5:
+            reset(k)
+            start = None
+    if len(test_string) > 0:
+        print(k.get_rand())
+        c = test_string[0]
+        new_c = k.simulated_key_pressed(c)
+        s += new_c
+        canvas.itemconfigure(canvas_text, text=s)
+        canvas.after(200, print_text, k, test_string[1:], s)   
+
 
 def word_entered(event=None):
     #gets the word the user guessed
@@ -148,62 +167,53 @@ def mod_word_num():
     wordNum +=1
     wordNumText.set("Word #"+str(wordNum))
 
-'''
+
 def check_powerup(k):
-    #file = open("powerup.txt", "r")
     b = False
     if k.get_mode() == "none" or k.get_rand() == 20:
         b = True
     return b
-'''
 
-def choose_pwr_1():
-    global score
-    global wordNum
+def reset(k):
+    k.change_mode("random")
+    k.change_rand(10)
+
+def skip():
     #outputTxt.config(fg="black")
-    if score<900:
-        output.set("You don't have enough points!")
-    else:
-        output.set("Skipped!")
-        mod_word_num()
-        mod_score(-9)
+    output.set("Skipped!")
+    mod_word_num()
     return
 
-def choose_pwr_2():
+def choose_pwr_2(k):
     global score
-    global wordNum
-    #outputTxt.config(fg="black")
-    if score<300:
-        output.set("You don't have enough points!")
-    else:
-        s = text_dict[wordNum -1]
-        new_s = s[0]
-        for i in range(len(s)):
-            if i > 0:
-                if i % 3 == 0:
-                    new_s += '*'
-                else :
-                    new_s += s[i]
-        output.set("Hint: " + new_s)
-
-        mod_score(-3)
-    return
-'''
-def choose_pwr_3(k):
-    global score
+    global start
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     elif score<600:
         output.set("You don't have enough points!")
     else:
-        output.set("Slowing down text for 5 seconds")
-        file = open("powerup.txt", "w")
-        file.write("3")
-        file.close()
+        output.set("Changing mode to NONE for 5 seconds")
+        k.change_mode("none")
+        start = time.time()
         mod_score(-6)
     return
-'''
+
+def choose_pwr_3(k):
+    global score
+    global start
+    #outputTxt.config(fg="black")
+    if(check_powerup(k)):
+        output.set("You can't use more than 1 power up at a time!")
+    elif score<300:
+        output.set("You don't have enough points!")
+    else:
+        output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
+        k.change_rand(20)
+        start = time.time()
+        mod_score(-3)
+    return
+
 
 #opens text document
 f = open("sampletext.txt", "r")
@@ -223,6 +233,10 @@ wordNumText = StringVar()
 text_var = StringVar()
 name_var = StringVar()
 clock_time = StringVar()
+
+canvas = tk.Canvas(root, width=650, height=200)
+canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
+
 
 #username enttry widgets
 root.geometry("700x500")
