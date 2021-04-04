@@ -57,12 +57,11 @@ def instruction_page():
     addressEntry.destroy()
     portEntry.destroy()
 
-    '''
+    
     sock = socket.socket()
-    sock.connect(address, port)
+    sock.connect((address, port))
     test_string = sock.recv(1024).decode()
     print(sock.recv(1024).decode())
-    '''
     
     #global bc we need to destroy them in another function
     global greeting, instruc, beginButton
@@ -246,6 +245,12 @@ f = open("sampletext.txt", "r")
 text = f.read()
 text_no_punct = text.translate(str.maketrans('', '', string.punctuation))
 text_dict = text_no_punct.split(" ")
+
+def set_correct():
+    f = open("test.txt", "r")
+    text = f.read()
+    text_no_punct = text.translate(str.maketrans('', '', string.punctuation))
+    text_dict = text_no_punct.split(" ")
 
 #set up GUI
 root = tk.Tk()

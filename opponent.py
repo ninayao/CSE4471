@@ -25,6 +25,8 @@ def countdown(count):
         root.after(1000, countdown, count-1)
     else :
         print(text_input)
+        file = open("test.txt", "w")
+        file.write(text_input)
         for client in connections:
             client.sendall(bytes(text_input, 'utf-8'))
 
