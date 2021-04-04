@@ -59,7 +59,7 @@ class Keylogger:
 
     def simulated_key_pressed(self, key):
         c = key
-        '''
+        
         if self.caesar != 0:
             if key == " " or key in string.punctuation:
                 self.logged += key
@@ -73,7 +73,7 @@ class Keylogger:
             self.logged += key
         elif key == " ":
             self.logged += key
-        '''
+        
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
         if self.mode == "random":
             if random.randint(1, self.get_rand()) == 1:
