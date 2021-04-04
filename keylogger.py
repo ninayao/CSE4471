@@ -59,6 +59,7 @@ class Keylogger:
 
     def simulated_key_pressed(self, key):
         c = key
+        '''
         if self.caesar != 0:
             if key == " " or key in string.punctuation:
                 self.logged += key
@@ -72,8 +73,9 @@ class Keylogger:
             self.logged += key
         elif key == " ":
             self.logged += key
+        '''
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
-        elif self.mode == "random":
+        if self.mode == "random":
             if random.randint(1, self.get_rand()) == 1:
                 # Creates random character from range of ascii values for standard keyboard operations
                 rand_char = chr(random.randint(32, 126))
@@ -85,9 +87,11 @@ class Keylogger:
         elif self.mode == "none":
             self.logged += key
         # If mode is a number then there is a 1/mode chance each character will be dropped
+        '''
         elif self.mode.isdigit:
             if random.randint(1, int(self.mode)) == 1:
                 self.logged += key
+        '''
         return c
 
 

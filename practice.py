@@ -4,6 +4,7 @@ import string
 import os
 import tkinter as tk
 from tkinter import *
+from keylogger import Keylogger
 
 guessed_indices = []
 name = ""
@@ -26,6 +27,7 @@ def get_name(event=None):
 
 def instruction_page():
     #get rid of name entry widgets
+    welcome.destroy()
     enterName.destroy()
     nameEntry.destroy()
     nameButton.destroy()
@@ -46,6 +48,7 @@ def instruction_page():
 
 def set_up_gui(event=None):
     global outputTxt
+    global delta
     #get rid of instruction widgets
     greeting.destroy()
     instruc.destroy()
@@ -53,16 +56,40 @@ def set_up_gui(event=None):
     scr.set(name+"'s Score: "+str(score))
     #sets up the game layout
     wordNumText.set("Word #1")
+
+    k = Keylogger("random")
+
     yourScore = tk.Label(root, textvariable=scr).grid(row=0, column=0, sticky=W)
     opsScore = tk.Label(root, text="Op Score: 0").grid(row=0, column=1, sticky=W)
-    pwr1 = tk.Button(root, command=choose_pwr_1, text="pwr 1").grid(row=0, column=2)
-    pwr2 = tk.Button(root, command=choose_pwr_2, text="pwr 2").grid(row=0, column=3)
-    pwr3 = tk.Button(root, command=choose_pwr_3, text="pwr 3").grid(row=0, column=4)
+    pwr1 = tk.Button(root, command= choose_pwr_1, text="skip").grid(row=0, column=2)
+    pwr2 = tk.Button(root, command= lambda:choose_pwr_2(k), text="hint").grid(row=0, column=3)
+    #pwr3 = tk.Button(root, command= lambda:choose_pwr_3(k), text="hint").grid(row=0, column=4)
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
     tk.Label(root, text="Your guess:", bg="light blue").grid(row=4, column=1, sticky=W)
-    tk.Label(root, text="Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then", bg="yellow", wraplength=420, justify=LEFT).grid(row=2, columnspan=6)
-    root.geometry("420x380")
+
+    #tk.Label(root, text="Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then", bg="yellow", wraplength=420, justify=LEFT).grid(row=2, columnspan=6)
+    
+    
+    #print out text by char
+    canvas = tk.Canvas(root, width=650, height=200)
+    canvas.grid(row=3, column=0, columnspan = 5, sticky = tk.W+tk.E)
+    canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
+    test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
+    delta= 200
+    delay = 0
+    s = ""
+    for c in test_string:
+        new_c = k.simulated_key_pressed(c)
+        s = s + new_c
+        update_text = lambda s=s: canvas.itemconfigure(canvas_text, text=s)
+        canvas.after(delay, update_text)
+        delay += delta
+        print(delta)
+        #canvas.itemconfigure(canvas_text, text=s)
+        #canvas.after(200, update_text(canvas, c, k, canvas_text, s))     
+    
+    root.geometry("700x500")
     root.configure(bg="light blue")
     textEntry = tk.Entry(root, textvariable=text_var)
     textEntry.grid(row=4, column=2, columnspan=2, sticky=W)
@@ -81,7 +108,7 @@ def set_up_gui(event=None):
 def word_entered(event=None):
     #gets the word the user guessed
     input = text_var.get()
-    print(input)
+    #print(input)
     text_var.set("")
     process_user_input(input)
 
@@ -113,50 +140,48 @@ def mod_word_num():
     wordNum +=1
     wordNumText.set("Word #"+str(wordNum))
 
-def check_powerup():
-    file = open("powerup.txt", "r")
-    b = True
-    if file.read() == "":
-        b = False
+def check_powerup(k):
+    #file = open("powerup.txt", "r")
+    b = False
+    if k.get_mode() == "none" or k.get_rand() == 20:
+        b = True
     return b
-
-def clear_powerup():
-    open("powerup.txt", "w").close()
 
 def choose_pwr_1():
     global score
-    outputTxt.config(fg="black")
-    if(check_powerup()):
-        output.set("You can't use more than 1 power up at a time!")
-    elif score<900:
+    global delta
+    #outputTxt.config(fg="black")
+    if score<900:
         output.set("You don't have enough points!")
     else:
-        output.set("Changing mode to NONE for 5 seconds")
-        file = open("powerup.txt", "w")
-        file.write("1")
-        file.close()
+        output.set("Slowing down")
+        delta = 500
+        print(delta + "power")
         mod_score(-9)
     return
 
-def choose_pwr_2():
+def choose_pwr_2(k):
     global score
-    outputTxt.config(fg="black")
-    if(check_powerup()):
+    #outputTxt.config(fg="black")
+    if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     elif score<300:
         output.set("You don't have enough points!")
     else:
         output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
+        '''
         file = open("powerup.txt", "w")
         file.write("2") 
         file.close()
+        '''
+        k.change_rand(20)
         mod_score(-3)
     return
-
-def choose_pwr_3():
+'''
+def choose_pwr_3(k):
     global score
-    outputTxt.config(fg="black")
-    if(check_powerup()):
+    #outputTxt.config(fg="black")
+    if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     elif score<600:
         output.set("You don't have enough points!")
@@ -167,6 +192,7 @@ def choose_pwr_3():
         file.close()
         mod_score(-6)
     return
+'''
 
 #opens text document
 f = open("sampletext.txt", "r")
@@ -188,7 +214,7 @@ name_var = StringVar()
 clock_time = StringVar()
 
 #username enttry widgets
-root.geometry("420x380")
+root.geometry("700x500")
 welcome = tk.Label(root, text="Welcome to the typing game!", bg="light blue")
 welcome.grid(row=0)
 welcome.place(relx=0.5, rely=0.25, anchor=CENTER)
