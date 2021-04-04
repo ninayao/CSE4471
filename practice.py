@@ -5,6 +5,7 @@ import os
 import tkinter as tk
 from tkinter import *
 from keylogger import Keylogger
+import math
 
 guessed_indices = []
 name = ""
@@ -12,12 +13,17 @@ wordNum = 1
 score = 0
 
 def countdown(count):
+    global score
     # change text in label        
     clock_time.set(str(count))
 
-    if count >= 0:
+    if count > 0:
         # call countdown again after 1000ms (1s)
-        root.after(1000, countdown, count+1)
+        root.after(1000, countdown, count-1)
+    else :
+        output.set("Game Over!\nScore: "+str(score))
+
+        
 
 def get_name(event=None):
     #gets the name entered from the first screen
@@ -37,7 +43,7 @@ def instruction_page():
     greeting = tk.Label(root, text="Hi "+name+"!", bg="light blue")
     greeting.grid(row=0)
     greeting.place(relx=0.5, rely=0.10, anchor=CENTER)
-    instruc = tk.Label(root, text="Instructions:\n\nOn the next screen, you will see text printing with multiple errors throughout. Your goal is to decipher what the text is supposed to say, and enter it word by word.\n\nThere will be a text entry box where you will enter the indicated word. When you hit submit, you will be told whether your guess was correct or not, and your score will be adjusted accordingly.\n\nWhen enough points have been acquired, you may purchase a power-up by clicking the buttons labeled \"pwr 1\", \"pwr 2\", and \"pwr 3\". The power-ups will give you an advantage by decreasing the amount of bugs you encounter or by slowing down your opponents text speed.\n\n\nGood Luck!", bg="light blue", wraplength=420)
+    instruc = tk.Label(root, text="Instructions:\n\nOn the next screen, you will see text printing with multiple errors throughout. Your goal is to decipher what the text is supposed to say, and enter it word by word.\n\nThere will be a text entry box where you will enter the indicated word. When you hit submit, you will be told whether your guess was correct or not, and your score will be adjusted accordingly.\n\nWhen enough points have been acquired, you may purchase a hints or skips by clicking the buttons. \n\n\nGood Luck!", bg="light blue", wraplength=420)
     instruc.grid(row=1)
     instruc.place(relx=0.5, rely=0.50,anchor=CENTER)
     beginButton = tk.Button(root, command=set_up_gui, text="start the game")
@@ -62,7 +68,7 @@ def set_up_gui(event=None):
     yourScore = tk.Label(root, textvariable=scr).grid(row=0, column=0, sticky=W)
     opsScore = tk.Label(root, text="Op Score: 0").grid(row=0, column=1, sticky=W)
     pwr1 = tk.Button(root, command= choose_pwr_1, text="skip").grid(row=0, column=2)
-    pwr2 = tk.Button(root, command= lambda:choose_pwr_2(k), text="hint").grid(row=0, column=3)
+    pwr2 = tk.Button(root, command= choose_pwr_2, text="hint").grid(row=0, column=3)
     #pwr3 = tk.Button(root, command= lambda:choose_pwr_3(k), text="hint").grid(row=0, column=4)
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
@@ -85,9 +91,8 @@ def set_up_gui(event=None):
         update_text = lambda s=s: canvas.itemconfigure(canvas_text, text=s)
         canvas.after(delay, update_text)
         delay += delta
-        print(delta)
         #canvas.itemconfigure(canvas_text, text=s)
-        #canvas.after(200, update_text(canvas, c, k, canvas_text, s))     
+        #canvas.after(200, update_text(canvas, c, k, canvas_text, s))    
     
     root.geometry("700x500")
     root.configure(bg="light blue")
@@ -98,7 +103,10 @@ def set_up_gui(event=None):
     output.set("Enter the word at position "+str(wordNum)+"!")
     clock = tk.Label(root, textvariable=clock_time)
     clock.grid(row=6, column=0)
-    countdown(0)
+
+    #countdown(5)
+    countdown(math.ceil(len(test_string)*200/1000))
+
     outputTxt = tk.Label(root, textvariable=output, bg="light blue")
     outputTxt.grid(row=6, column=1, columnspan=4)
     root.grid_rowconfigure(1, minsize=20) 
@@ -140,41 +148,44 @@ def mod_word_num():
     wordNum +=1
     wordNumText.set("Word #"+str(wordNum))
 
+'''
 def check_powerup(k):
     #file = open("powerup.txt", "r")
     b = False
     if k.get_mode() == "none" or k.get_rand() == 20:
         b = True
     return b
+'''
 
 def choose_pwr_1():
     global score
-    global delta
+    global wordNum
     #outputTxt.config(fg="black")
     if score<900:
         output.set("You don't have enough points!")
     else:
-        output.set("Slowing down")
-        delta = 500
-        print(delta + "power")
+        output.set("Skipped!")
+        mod_word_num()
         mod_score(-9)
     return
 
-def choose_pwr_2(k):
+def choose_pwr_2():
     global score
+    global wordNum
     #outputTxt.config(fg="black")
-    if(check_powerup(k)):
-        output.set("You can't use more than 1 power up at a time!")
-    elif score<300:
+    if score<300:
         output.set("You don't have enough points!")
     else:
-        output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
-        '''
-        file = open("powerup.txt", "w")
-        file.write("2") 
-        file.close()
-        '''
-        k.change_rand(20)
+        s = text_dict[wordNum -1]
+        new_s = s[0]
+        for i in range(len(s)):
+            if i > 0:
+                if i % 3 == 0:
+                    new_s += '*'
+                else :
+                    new_s += s[i]
+        output.set("Hint: " + new_s)
+
         mod_score(-3)
     return
 '''
