@@ -6,12 +6,18 @@ import tkinter as tk
 from tkinter import *
 from keylogger import Keylogger
 import math
+import socket
 
 guessed_indices = []
 name = ""
+address = ""
+port = 0
 wordNum = 1
 score = 0
 start = None
+sock = None
+#test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
+test_string = ""
 
 def countdown(count):
     global score
@@ -23,21 +29,41 @@ def countdown(count):
         root.after(1000, countdown, count-1)
     else :
         output.set("Game Over!\nScore: "+str(score))
-
-        
+      
 
 def get_name(event=None):
     #gets the name entered from the first screen
     global name 
+    global address
+    global port
     name = name_var.get()
+    address = address_var.get()
+    port = int(port_var.get())
     instruction_page()
 
 def instruction_page():
+    global address
+    global port
+    global sock
+    global test_string
     #get rid of name entry widgets
+
     welcome.destroy()
     enterName.destroy()
     nameEntry.destroy()
     nameButton.destroy()
+    enterAddress.destroy()
+    enterPort.destroy()
+    addressEntry.destroy()
+    portEntry.destroy()
+
+    '''
+    sock = socket.socket()
+    sock.connect(address, port)
+    test_string = sock.recv(1024).decode()
+    print(sock.recv(1024).decode())
+    '''
+    
     #global bc we need to destroy them in another function
     global greeting, instruc, beginButton
     #print instructions
@@ -56,6 +82,7 @@ def instruction_page():
 def set_up_gui(event=None):
     global outputTxt
     global delta
+    global test_string
     #get rid of instruction widgets
     greeting.destroy()
     instruc.destroy()
@@ -82,7 +109,6 @@ def set_up_gui(event=None):
     #canvas = tk.Canvas(root, width=650, height=200)
     canvas.grid(row=3, column=0, columnspan = 5, sticky = tk.W+tk.E)
     #canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
-    test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
     print_text(k, test_string, "")
     '''
     delta= 200
@@ -233,6 +259,8 @@ wordNumText = StringVar()
 text_var = StringVar()
 name_var = StringVar()
 clock_time = StringVar()
+address_var =StringVar()
+port_var =StringVar()
 
 canvas = tk.Canvas(root, width=650, height=200)
 canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
@@ -242,16 +270,30 @@ canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
 root.geometry("700x500")
 welcome = tk.Label(root, text="Welcome to the typing game!", bg="light blue")
 welcome.grid(row=0)
-welcome.place(relx=0.5, rely=0.25, anchor=CENTER)
+welcome.place(relx=0.5, rely=0.15, anchor=CENTER)
 enterName = tk.Label(root, text="Enter your name", bg="light blue")
 enterName.grid(row=1)
-enterName.place(relx=0.5, rely=0.35,anchor=CENTER)
+enterName.place(relx=0.5, rely=0.25,anchor=CENTER)
 nameEntry = tk.Entry(root, textvariable=name_var)
 nameEntry.grid(row=2)
-nameEntry.place(relx=0.5, rely=0.45,anchor=CENTER)
+nameEntry.place(relx=0.5, rely=0.35,anchor=CENTER)
 nameButton = tk.Button(root, command=get_name, text="submit")
-nameButton.grid(row=3)
-nameButton.place(relx=0.5, rely=0.55,anchor=CENTER)
+nameButton.grid(row=7)
+nameButton.place(relx=0.5, rely=0.85,anchor=CENTER)
+
+enterAddress = tk.Label(root, text="Enter address", bg="light blue")
+enterAddress.grid(row=3)
+enterAddress.place(relx=0.5, rely=0.45,anchor=CENTER)
+addressEntry = tk.Entry(root, textvariable=address_var)
+addressEntry.grid(row=4)
+addressEntry.place(relx=0.5, rely=0.55,anchor=CENTER)
+enterPort = tk.Label(root, text="Enter port number", bg="light blue")
+enterPort.grid(row=5)
+enterPort.place(relx=0.5, rely=0.65,anchor=CENTER)
+portEntry = tk.Entry(root, textvariable=port_var)
+portEntry.grid(row=6)
+portEntry.place(relx=0.5, rely=0.75,anchor=CENTER)
+
 root.bind('<Return>',get_name)
 
 
