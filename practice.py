@@ -124,7 +124,7 @@ def print_text(k, test_string, s):
             reset(k)
             start = None
     if len(test_string) > 0:
-        print(k.get_rand())
+        #print(k.get_rand())
         c = test_string[0]
         new_c = k.simulated_key_pressed(c)
         s += new_c
