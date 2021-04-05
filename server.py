@@ -44,16 +44,19 @@ if __name__ == '__main__':
     # Modify to add more players
     players = []
     data = []
+    i = 1
     while len(connections) < 2:
         c, addr = s.accept()   
         connections.append(c)
-        user_name = c.recv(28).decode()
-        data.append(user_name)
-        print(str(addr)+": " + user_name)
-        p = Player(user_name)
+        data_str = c.recv(28).decode()
+        data.append(data_str)
+        print(str(addr)+": " + data_str)
+        #username isn't being sent to server anymore rn so I'm just replacing with numbers
+        p = Player("player" + str(i))
         p.connection = c
         players.append(p)
-
+        i+=1
+        
     #game_data = data1 + "######" + data2
     players[0].connection.sendall(bytes(data[1], 'utf-8'))
     players[1].connection.sendall(bytes(data[0], 'utf-8'))
