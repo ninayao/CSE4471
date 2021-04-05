@@ -48,7 +48,7 @@ if __name__ == '__main__':
     while len(connections) < 2:
         c, addr = s.accept()   
         connections.append(c)
-        data_str = c.recv(28).decode()
+        data_str = c.recv(1024).decode()
         data.append(data_str)
         print(str(addr)+": " + data_str)
         #username isn't being sent to server anymore rn so I'm just replacing with numbers
