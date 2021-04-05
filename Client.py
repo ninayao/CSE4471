@@ -41,7 +41,7 @@ class Player:
         self.name = name
 
     def mod_score(self, score_modifier):
-        self.score += score_modifier * 100
+        self.score += int(score_modifier) * 100
 
     def buy_powerup(self, power):
         #and self.score >= 100\

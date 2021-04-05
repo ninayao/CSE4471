@@ -17,8 +17,8 @@ wordNum = 1
 score = 0
 start = None
 sock = None
-#test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
-test_string = ""
+test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
+#test_string = ""
 
 def countdown(count):
     global score
@@ -48,7 +48,6 @@ def instruction_page():
     global SOCKET_CONNECTION
     global test_string
     #get rid of name entry widgets
-
     welcome.destroy()
     enterName.destroy()
     nameEntry.destroy()
@@ -61,7 +60,7 @@ def instruction_page():
     address_with_port = address, port
     SOCKET_CONNECTION = socket.socket()
     SOCKET_CONNECTION.connect(address_with_port)
-    
+    SOCKET_CONNECTION.sendall(bytes(name, 'utf-8'))
     #global bc we need to destroy them in another function
     global greeting, instruc, beginButton
     #print instructions
@@ -92,7 +91,7 @@ def set_up_gui(event=None):
     k = Keylogger("random")
 
     yourScore = tk.Label(root, textvariable=scr).grid(row=0, column=0, sticky=W)
-    opsScore = tk.Label(root, text="Op Score: 0").grid(row=0, column=1, sticky=W)
+    opsScore = tk.Label(root, textvariable=o_scr).grid(row=0, column=1, sticky=W)
     pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
     pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="pwr 1").grid(row=0, column=3)
     pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="pwr 2").grid(row=0, column=4)
@@ -161,22 +160,27 @@ def word_entered(event=None):
     input = text_var.get()
     #print(input)
     text_var.set("")
-    SOCKET_CONNECTION.sendall(bytes(input, 'utf-8'))
-    recieved = SOCKET_CONNECTION.recv(1024).decode()
-    output.set(recieved)
-    # process_user_input(input)
+    # SOCKET_CONNECTION.sendall(bytes(input, 'utf-8'))
+    # recieved = SOCKET_CONNECTION.recv(1024).decode()
+    # output.set(recieved)
+    process_user_input(input)
 
+# make this send data over connection???
 def process_user_input(user_input):
     #checks if guess is right
     global wordNum
     word_guess = user_input
-    index= wordNum -1
+    index = wordNum -1
     if word_guess == text_dict[index]:
         guessed_indices.append(index)
         output.set("Correct!")
         outputTxt.config(fg="green3")
-        mod_score(len(word_guess))
+        # mod_score(len(word_guess))
         mod_word_num()
+        SOCKET_CONNECTION.sendall(bytes(str(len(word_guess)), 'utf-8'))
+        scores = SOCKET_CONNECTION.recv(1024).decode().split()
+        scr.set(name_var.get() + "'s score: " + str((scores[0])))
+        o_scr.set("Op's score: " + str(scores[1]))
         return len(word_guess)
     else:
         output.set("Incorrect :(")
@@ -255,6 +259,7 @@ root.configure(bg="light blue")
 
 #GUI stringVars
 scr = StringVar()
+o_scr = StringVar()
 output = StringVar()
 wordNumText = StringVar()
 text_var = StringVar()

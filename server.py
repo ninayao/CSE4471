@@ -3,6 +3,8 @@ import time
 from keylogger import Keylogger
 import os
 import socket
+from Client import Player
+
 
 
 #def keylog_from_text(text):
@@ -35,23 +37,38 @@ if __name__ == '__main__':
     string_from_file = produce_text()
     port = input("Input the port to open")
     s = socket.socket()
+    player_count = input("Input the numbers of players")
     s.bind(('', int(port)))
     print("Socket bound to ", port)
     s.listen(5)
     # Modify to add more players
-    while len(connections) < 1:
+    players = []
+    while len(connections) < int(player_count):
         c, addr = s.accept()   
         connections.append(c)
-        print("Got connection from " + str(addr))
+        user_name = c.recv(28).decode()
+        print("Got connection from " + user_name + " at " + str(addr))
+        p = Player(user_name)
+        p.connection = c
+        players.append(p)
+
     speed = 0.2
     while(1):
-        for client in connections:
-            data = client.recv(28).decode()
+        # for client in connections:
+        #     data = client.recv(28).decode()
+        #     print(data)
+        #     send_data = data
+        #     client.sendall(bytes(data, 'utf-8'))
+        for player in players:
+            data = player.connection.recv(28).decode()
             print(data)
-            send_data = data
-            client.sendall(bytes(data, 'utf-8'))
-
-
+            if True:
+                score_string = ""
+                player.mod_score(data)
+                for i in range(len(players)):
+                    # hardcoding user 2 score while I test on my own
+                    score_string += str(players[i].score) + " " + "200"
+                player.connection.sendall(bytes(score_string, 'utf-8'))
     # start = None
     # p_bool = False
     # #text = keylog_from_text(mode, string_from_file)
