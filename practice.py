@@ -7,6 +7,7 @@ from tkinter import *
 from keylogger import Keylogger
 import math
 import socket
+from Client import Game, Player
 
 guessed_indices = []
 name = ""
@@ -44,7 +45,7 @@ def get_name(event=None):
 def instruction_page():
     global address
     global port
-    global sock
+    global SOCKET_CONNECTION
     global test_string
     #get rid of name entry widgets
 
@@ -57,11 +58,9 @@ def instruction_page():
     addressEntry.destroy()
     portEntry.destroy()
 
-    
-    sock = socket.socket()
-    sock.connect((address, port))
-    test_string = sock.recv(1024).decode()
-    print(sock.recv(1024).decode())
+    address_with_port = address, port
+    SOCKET_CONNECTION = socket.socket()
+    SOCKET_CONNECTION.connect(address_with_port)
     
     #global bc we need to destroy them in another function
     global greeting, instruc, beginButton
@@ -96,7 +95,7 @@ def set_up_gui(event=None):
     opsScore = tk.Label(root, text="Op Score: 0").grid(row=0, column=1, sticky=W)
     pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
     pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="pwr 1").grid(row=0, column=3)
-    pwr3 = tk.Button(root, command= lambda:choose_pwr_3(k), text="pwr 2").grid(row=0, column=4)
+    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="pwr 2").grid(row=0, column=4)
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
     tk.Label(root, text="Your guess:", bg="light blue").grid(row=4, column=1, sticky=W)
@@ -162,7 +161,10 @@ def word_entered(event=None):
     input = text_var.get()
     #print(input)
     text_var.set("")
-    process_user_input(input)
+    SOCKET_CONNECTION.sendall(bytes(input, 'utf-8'))
+    recieved = SOCKET_CONNECTION.recv(1024).decode()
+    output.set(recieved)
+    # process_user_input(input)
 
 def process_user_input(user_input):
     #checks if guess is right
@@ -245,12 +247,6 @@ f = open("sampletext.txt", "r")
 text = f.read()
 text_no_punct = text.translate(str.maketrans('', '', string.punctuation))
 text_dict = text_no_punct.split(" ")
-
-def set_correct():
-    f = open("test.txt", "r")
-    text = f.read()
-    text_no_punct = text.translate(str.maketrans('', '', string.punctuation))
-    text_dict = text_no_punct.split(" ")
 
 #set up GUI
 root = tk.Tk()
