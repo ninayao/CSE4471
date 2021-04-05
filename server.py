@@ -66,8 +66,10 @@ if __name__ == '__main__':
                 score_string = ""
                 player.mod_score(data)
                 for i in range(len(players)):
-                    # hardcoding user 2 score while I test on my own
-                    score_string += str(players[i].score) + " " + "200"
+                    if len(players) > 1:
+                        score_string += str(players[i].score) + " "
+                    else:
+                        score_string += str(players[i].score) + " " + "200 "
                 player.connection.sendall(bytes(score_string, 'utf-8'))
     # start = None
     # p_bool = False
