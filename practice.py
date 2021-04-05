@@ -17,8 +17,12 @@ wordNum = 1
 score = 0
 start = None
 sock = None
+text_input = ""
 test_string = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then"
-#test_string = ""
+clock1 = None
+t = None
+instr = None
+text_dict= []
 
 def countdown(count):
     global score
@@ -40,27 +44,33 @@ def get_name(event=None):
     name = name_var.get()
     address = address_var.get()
     port = int(port_var.get())
-    instruction_page()
+    game()
 
 def instruction_page():
     global address
     global port
     global SOCKET_CONNECTION
     global test_string
-    #get rid of name entry widgets
-    welcome.destroy()
-    enterName.destroy()
-    nameEntry.destroy()
-    nameButton.destroy()
-    enterAddress.destroy()
-    enterPort.destroy()
-    addressEntry.destroy()
-    portEntry.destroy()
+    global text_string
+    global text_dict
+    global instr
+    global clock1
+    global t
+
+    t.destroy()
+    instr.destroy()
+    clock1.destroy()
 
     address_with_port = address, port
     SOCKET_CONNECTION = socket.socket()
     SOCKET_CONNECTION.connect(address_with_port)
-    SOCKET_CONNECTION.sendall(bytes(name, 'utf-8'))
+    SOCKET_CONNECTION.sendall(bytes(text_input, 'utf-8'))
+
+    test_string = SOCKET_CONNECTION.recv(1024).decode()
+    print(test_string)
+
+    gen_text_dict(test_string)
+
     #global bc we need to destroy them in another function
     global greeting, instruc, beginButton
     #print instructions
@@ -137,6 +147,49 @@ def set_up_gui(event=None):
     root.grid_rowconfigure(3, minsize=20)  
     root.grid_rowconfigure(5, minsize=20)  
 
+def countdown2(count):
+    global text_input
+    # change text in label        
+    clock_time2.set(str(count))
+
+    if count > 0:
+        # call countdown again after 1000ms (1s)
+        root.after(1000, countdown2, count-1)
+    else:
+        print(text_input)
+        '''
+        for client in connections:
+            client.sendall(bytes(text_input, 'utf-8'))
+        '''
+        instruction_page()
+
+def onKeyPress(event):
+    global text_input
+    text_input += event.char
+
+def game():
+    global instr
+    global clock1
+    global t
+
+    #get rid of name entry widgets
+    welcome.destroy()
+    enterName.destroy()
+    nameEntry.destroy()
+    nameButton.destroy()
+    enterAddress.destroy()
+    enterPort.destroy()
+    addressEntry.destroy()
+    portEntry.destroy()
+
+    instr = tk.Label(root, text="Type here:")
+    instr.grid(row=0, column=1, sticky=W)
+    t = Text(root, height=20, width=90)
+    t.grid(row=1, column=1)
+    clock1 = tk.Label(root, textvariable=clock_time2)
+    clock1.grid(row=0, column=1, columnspan=2)
+    countdown2(30)
+    root.bind('<KeyPress>', onKeyPress)
 
 def print_text(k, test_string, s):
     global start
@@ -169,6 +222,7 @@ def word_entered(event=None):
 def process_user_input(user_input):
     #checks if guess is right
     global wordNum
+    global text_dict
     word_guess = user_input
     index = wordNum -1
     if word_guess == text_dict[index]:
@@ -177,10 +231,12 @@ def process_user_input(user_input):
         outputTxt.config(fg="green3")
         # mod_score(len(word_guess))
         mod_word_num()
+        '''
         SOCKET_CONNECTION.sendall(bytes(str(len(word_guess)), 'utf-8'))
         scores = SOCKET_CONNECTION.recv(1024).decode().split()
         scr.set(name_var.get() + "'s score: " + str((scores[0])))
         o_scr.set("Op's score: " + str(scores[1]))
+        '''
         return len(word_guess)
     else:
         output.set("Incorrect :(")
@@ -247,10 +303,12 @@ def choose_pwr_3(k):
 
 
 #opens text document
-f = open("sampletext.txt", "r")
-text = f.read()
-text_no_punct = text.translate(str.maketrans('', '', string.punctuation))
-text_dict = text_no_punct.split(" ")
+def gen_text_dict(text_str):
+    global text_dict
+    #f = open("sampletext.txt", "r")
+    #text = f.read()
+    text_no_punct = text_str.translate(str.maketrans('', '', string.punctuation))
+    text_dict = text_no_punct.split(" ")
 
 #set up GUI
 root = tk.Tk()
@@ -265,6 +323,7 @@ wordNumText = StringVar()
 text_var = StringVar()
 name_var = StringVar()
 clock_time = StringVar()
+clock_time2 = StringVar()
 address_var =StringVar()
 port_var =StringVar()
 

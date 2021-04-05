@@ -35,30 +35,31 @@ if __name__ == '__main__':
         mode = "random"
     k = Keylogger(mode)
     string_from_file = produce_text()
-    port = input("Input the port to open")
+    port = input("Input the port to open: ")
     s = socket.socket()
-    player_count = input("Input the numbers of players")
+    #player_count = input("Input the numbers of players")
     s.bind(('', int(port)))
     print("Socket bound to ", port)
     s.listen(5)
     # Modify to add more players
     players = []
-    while len(connections) < int(player_count):
+    data = []
+    while len(connections) < 2:
         c, addr = s.accept()   
         connections.append(c)
         user_name = c.recv(28).decode()
-        print("Got connection from " + user_name + " at " + str(addr))
+        data.append(user_name)
+        print(str(addr)+": " + user_name)
         p = Player(user_name)
         p.connection = c
         players.append(p)
 
-    speed = 0.2
+    #game_data = data1 + "######" + data2
+    players[0].connection.sendall(bytes(data[1], 'utf-8'))
+    players[1].connection.sendall(bytes(data[0], 'utf-8'))
+
+    '''
     while(1):
-        # for client in connections:
-        #     data = client.recv(28).decode()
-        #     print(data)
-        #     send_data = data
-        #     client.sendall(bytes(data, 'utf-8'))
         for player in players:
             data = player.connection.recv(28).decode()
             print(data)
@@ -71,6 +72,10 @@ if __name__ == '__main__':
                     else:
                         score_string += str(players[i].score) + " " + "200 "
                 player.connection.sendall(bytes(score_string, 'utf-8'))
+    '''
+
+
+
     # start = None
     # p_bool = False
     # #text = keylog_from_text(mode, string_from_file)
@@ -107,5 +112,5 @@ if __name__ == '__main__':
     #     #print(speed)
     #     #print(k.get_mode())
     #     #print(k.get_rand())
-    file = open("powerup.txt", "w")
-    file.write("END")    
+    #file = open("powerup.txt", "w")
+    #file.write("END")    
