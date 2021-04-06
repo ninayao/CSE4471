@@ -139,16 +139,17 @@ def set_up_gui(event=None):
     root.bind('<Return>',word_entered)
     output.set("Enter the word at position "+str(wordNum)+"!")
     clock = tk.Label(root, textvariable=clock_time)
-    clock.grid(row=6, column=0)
+    clock.grid(row=8, column=0)
 
     #countdown(5)
     countdown(math.ceil(len(test_string)*200/1000))
 
     outputTxt = tk.Label(root, textvariable=output, bg="light blue")
-    outputTxt.grid(row=6, column=1, columnspan=4)
+    outputTxt.grid(row=8, column=1, columnspan=4)
     root.grid_rowconfigure(1, minsize=20) 
     root.grid_rowconfigure(3, minsize=20)  
-    root.grid_rowconfigure(5, minsize=20)  
+    root.grid_rowconfigure(5, minsize=30)  
+    root.grid_rowconfigure(7, minsize=20)
 
 def countdown2(count):
     global text_input
@@ -318,10 +319,16 @@ def choose_pwr_4(k):
     #     output.set("You don't have enough points!")
     else:
         output.set("Caesar cipher decryptor purchased")
+        caeserText = tk.Label(root, text="cipher-text:")
+        caeserText.grid(row=6, column=0)
         caesarInput = tk.Entry(root, textvariable=caesar_input)
-        caesarInput.grid(row=5, column=2, columnspan=2, sticky=W)
+        caesarInput.grid(row=6, column=1, sticky=W)
+        shiftText = tk.Label(root, text="shift size:")
+        shiftText.grid(row=6, column=2)
         shiftInput = tk.Entry(root, textvariable=caesar_shift)
-        shiftInput.grid(row=5, column=4, columnspan=2, sticky=W)
+        shiftInput.grid(row=6, column=3, sticky=W)
+        caeserButton = tk.Button(root, text="submit")
+        caeserButton.grid(row=6, column=4)
         start = time.time()
         #mod_score(0)
     return
