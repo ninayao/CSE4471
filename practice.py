@@ -14,7 +14,7 @@ name = ""
 address = ""
 port = 0
 wordNum = 1
-score = 0
+p1score = 0
 start = None
 sock = None
 text_input = ""
@@ -25,6 +25,7 @@ instr = None
 caesar_count = 0
 player_number= ""
 text_dict= []
+usedCaesar = 0
 
 def countdown(count):
     global score
@@ -35,7 +36,70 @@ def countdown(count):
         # call countdown again after 1000ms (1s)
         root.after(1000, countdown, count-1)
     else :
-        output.set("Game Over!\nScore: "+str(score))
+        SOCKET_CONNECTION.sendall(bytes("end", 'utf-8'))
+        end_string = SOCKET_CONNECTION.recv(1024).decode()
+        if(end_string=="end"):
+            end_game()
+
+def end_game():
+    global word_guess
+    global p1score
+    global scores
+    global yourScore, opsScore, clock, pwr1, pwr2, pwr3, textToType, wordCount, guessBox, textEntry, canvas, submitBtn, outputTxt 
+    global caesarText, caesarInput, shiftText, shiftInput, caesarButton
+
+    #get score when timer runs out
+    SOCKET_CONNECTION.sendall(bytes("0", 'utf-8'))
+    scores = SOCKET_CONNECTION.recv(1024).decode().split()
+
+    #destroy all widgets for game-play
+    yourScore.destroy()
+    opsScore.destroy()
+    clock.destroy()
+    pwr1.destroy()
+    pwr2.destroy()
+    pwr3.destroy()
+    pwr4.destroy()
+    pwr5.destroy()
+    pwr6.destroy()
+    textToType.destroy()
+    wordCount.destroy()
+    guessBox.destroy()
+    textEntry.destroy()
+    canvas.destroy()
+    submitBtn.destroy()
+    outputTxt.destroy()
+    
+    #destroy caesar widgets only if caesar power up was bought
+    if(usedCaesar==1):
+        caesarText.destroy()
+        caesarInput.destroy()
+        shiftText.destroy()
+        shiftInput.destroy()
+        caesarButton.destroy()
+    
+    #print game over message
+    gameOverMessage = tk.Label(root, textvariable=gameover, bg="light blue")
+    gameOverMessage.place(relx=0.5, rely=0.3,anchor=CENTER)
+    scoreMessage = tk.Label(root, textvariable=scrmsg, bg="light blue")
+    scoreMessage.place(relx=0.5, rely=0.5,anchor=CENTER)
+
+    opscr = 0
+    #set a score for the player and the opponent
+    if(p1score==int(scores[0])):
+        scrmsg.set("Your score: "+str(p1score) +"\nOpponent's score: "+str(scores[1]))
+        opscr=scores[1]
+    else:
+        scrmsg.set("Your score: "+str(p1score) +"\nOpponent's score: "+str(scores[0]))
+        opscr=scores[0]
+
+    #determine who won the game
+    if(p1score>int(opscr)):
+        gameover.set("GameOver! You Win!")
+    elif(p1score<int(opscr)):
+        gameover.set("GameOver! You Lose :(")
+    else:
+        gameover.set("GameOver! It's a Tie!")      
       
 
 def get_name(event=None):
@@ -104,7 +168,8 @@ def set_up_gui(event=None):
     global delta
     global test_string
     player_score = None
-    
+    global yourScore, opsScore, clock, pwr1, pwr2, pwr3, pwr4, pwr5, pwr6, textToType, wordCount, guessBox, textEntry, canvas, submitBtn, outputTxt 
+
     #get rid of instruction widgets
     greeting.destroy()
     instruc.destroy()
@@ -118,26 +183,37 @@ def set_up_gui(event=None):
     k = Keylogger("random")
 
     # score widgets
-    yourScore = tk.Label(root, textvariable=scr).grid(row=0, column=0, sticky=W)
-    opsScore = tk.Label(root, textvariable=o_scr).grid(row=0, column=1, sticky=W)
+    yourScore = tk.Label(root, textvariable=scr)
+    yourScore.grid(row=0, column=0, sticky=W)
+    opsScore = tk.Label(root, textvariable=o_scr)
+    opsScore.grid(row=0, column=1, sticky=W)
 
     # Skip button widget
-    pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
+    pwr1 = tk.Button(root, command= skip, text="skip")
+    pwr1.grid(row=0, column=2)
     # powerup buttons
-    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ").grid(row=0, column=3)
+    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ")
+    pwr2.grid(row=0, column=3)
     # CHANGED TO 4 TO TEST CAESAR
-    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ").grid(row=0, column=4)
+    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ")
+    pwr3.grid(row=0, column=4)
 
-    pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor").grid(row=1, column=4)
+    pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor")
+    pwr4.grid(row=1, column=4)
     
-    pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ").grid(row=1, column=3)
+    pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ")
+    pwr5.grid(row=1, column=3)
 
-    pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ").grid(row=1, column=2)
+    pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ")
+    pwr6.grid(row=1, column=2)
 
     # Text Widgets
-    tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
-    tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
-    tk.Label(root, text="Your guess:", bg="light blue").grid(row=4, column=1, sticky=W)
+    textToType = tk.Label(root, text="Text to Type:", bg="light blue")
+    textToType.grid(row=2, sticky=W)
+    wordCount = tk.Label(root, textvariable=wordNumText, bg="light blue")
+    wordCount.grid(row=4, column=0, sticky=W)
+    guessBox = tk.Label(root, text="Your guess:", bg="light blue") 
+    guessBox.grid(row=4, column=1, sticky=W)
 
     #tk.Label(root, text="Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then", bg="yellow", wraplength=420, justify=LEFT).grid(row=2, columnspan=6)
     
@@ -166,8 +242,10 @@ def set_up_gui(event=None):
     textEntry = tk.Entry(root, textvariable=text_var)
     textEntry.grid(row=4, column=2, columnspan=2, sticky=W)
     # Widget for submit button
-    submitBtn = tk.Button(root, command= lambda: word_entered(k), text="submit").grid(row=4, column=4)
-    root.bind('<Return>',word_entered)
+    submitBtn = tk.Button(root, command= lambda: word_entered(k), text="submit")
+    submitBtn.grid(row=4, column=4)
+
+    root.bind('<Return>',lambda event: word_entered(k))
     # Index will be changed in word_entered when guess is correct
     output.set("Enter the word at position "+str(wordNum)+"!")
     clock = tk.Label(root, textvariable=clock_time)
@@ -230,7 +308,7 @@ def game():
     # timer widget
     clock1 = tk.Label(root, textvariable=clock_time2)
     clock1.grid(row=0, column=1, columnspan=2)
-    countdown2(45)
+    countdown2(10)
     # calls onKeyPress when key is pressed TODO: Modify keypress to use keylogger class?
     root.bind('<KeyPress>', onKeyPress)
 
@@ -283,6 +361,7 @@ def process_user_input(k, user_input):
     global wordNum
     global text_dict
     global caesar_count
+    global outputTxt
     # get guess form user_inpot field
     word_guess = user_input
     # front end indexing starts at 1 but of course it starts at 0 in the code
@@ -303,7 +382,6 @@ def process_user_input(k, user_input):
     # Incorrect guesses do not need to communicate with server
     else:
         output.set("Incorrect :(")
-        outputTxt.config(fg="red2")
         return 0
 
 def send_attack(k):
@@ -312,6 +390,7 @@ def send_attack(k):
 
 def mod_score(score_modifier):
     #modifies score if guess is right
+    global p1score
     global score
     global player_score
     #send length of word guess to server to modify score
@@ -320,6 +399,7 @@ def mod_score(score_modifier):
     # Splits on space and creates a list of scores
     # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
     scores = SOCKET_CONNECTION.recv(1024).decode().split()
+    p1score+=score_modifier*100
     print(scores)
     for score in scores:
             if score is None:
@@ -407,12 +487,16 @@ def choose_pwr_4(k):
     global score
     global start
     global caesar_count
+    global usedCaesar
+    global caesarText, caesarInput, shiftText, shiftInput, caesarButton
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     # elif score<100:
     #     output.set("You don't have enough points!")
     else:
+        usedCaesar+=1
+        print("bought cipher "+str(usedCaesar))
         output.set("Caesar cipher decryptor purchased")
         # TODO: MAKE WORTH MORE POINTS
         caesar_count += mod_score(-3)
@@ -449,6 +533,8 @@ root.title("typing game")
 root.configure(bg="light blue")
 
 #GUI stringVars
+gameover = StringVar()
+scrmsg = StringVar()
 scr = StringVar()
 o_scr = StringVar()
 output = StringVar()
