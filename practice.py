@@ -378,7 +378,7 @@ def choose_pwr_3(k):
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     # Powerup cost 300
-    elif score<300:
+    elif int(player_score) < 300:
         output.set("You don't have enough points!")
     # If you don't already have a powerup and you have enough points
     else:
@@ -399,7 +399,8 @@ def choose_pwr_4(k):
     #     output.set("You don't have enough points!")
     else:
         output.set("Caesar cipher decryptor purchased")
-
+        # TODO: MAKE WORTH MORE POINTS
+        mod_score(-3)
         # New text field widgets
         caesarText = tk.Label(root, text="cipher-text:")
         caesarText.grid(row=6, column=0)
