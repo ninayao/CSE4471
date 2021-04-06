@@ -8,7 +8,7 @@ class Keylogger:
     mode = []
     logged = ""
     rand = 10
-    caesar = 0
+    caesar = False
     shift = 0
 
 

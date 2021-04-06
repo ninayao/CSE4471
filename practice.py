@@ -130,7 +130,7 @@ def set_up_gui(event=None):
     
     pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ").grid(row=1, column=3)
 
-    pwr6 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\n Attack ").grid(row=1, column=2)
+    pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ").grid(row=1, column=2)
 
     # Text Widgets
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
@@ -164,7 +164,7 @@ def set_up_gui(event=None):
     textEntry = tk.Entry(root, textvariable=text_var)
     textEntry.grid(row=4, column=2, columnspan=2, sticky=W)
     # Widget for submit button
-    submitBtn = tk.Button(root, command=word_entered, text="submit").grid(row=4, column=4)
+    submitBtn = tk.Button(root, command= lambda: word_entered(k), text="submit").grid(row=4, column=4)
     root.bind('<Return>',word_entered)
     # Index will be changed in word_entered when guess is correct
     output.set("Enter the word at position "+str(wordNum)+"!")
@@ -265,7 +265,7 @@ def caesar_decrypt(event=None):
     # Print the decrypted string to the output widget        
     output.set(return_string)
 
-def word_entered(event=None):
+def word_entered(k):
     #gets the word the user guessed
     input = text_var.get()
     #print(input)
@@ -273,10 +273,10 @@ def word_entered(event=None):
     # SOCKET_CONNECTION.sendall(bytes(input, 'utf-8'))
     # recieved = SOCKET_CONNECTION.recv(1024).decode()
     # output.set(recieved)
-    process_user_input(input)
+    process_user_input(k, input)
 
 # make this send data over connection???
-def process_user_input(user_input):
+def process_user_input(k, user_input):
     #checks if guess is right
     global wordNum
     global text_dict
@@ -290,7 +290,7 @@ def process_user_input(user_input):
         guessed_indices.append(index)
         output.set("Correct!")
         outputTxt.config(fg="green3")
-        mod_score(len(word_guess))
+        k.caesar = mod_score(len(word_guess))
         # change index
         mod_word_num()
 
@@ -302,7 +302,9 @@ def process_user_input(user_input):
         outputTxt.config(fg="red2")
         return 0
 
-# TODO: move server communication here maybe?
+def send_attack(k):
+    mod_score("-4 cca")
+
 def mod_score(score_modifier):
     #modifies score if guess is right
     global score
@@ -323,6 +325,11 @@ def mod_score(score_modifier):
     o_scr.set("P2's score: " + str(scores[1]))
     player_number = scores[2]
     player_score = scores[int(player_number) - 1]
+    if len(scores) > 3:
+        return 3
+    else:
+        return 0
+    
 
 # Change indexing
 def mod_word_num():
@@ -367,7 +374,7 @@ def choose_pwr_2(k):
         output.set("Changing mode to NONE for 5 seconds")
         k.change_mode("none")
         start = time.time()
-        mod_score(-6)
+        k.caesar = mod_score(-6)
     return
 
 # Powerup for Reduced randomization
@@ -385,7 +392,7 @@ def choose_pwr_3(k):
         output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
         k.change_rand(20)
         start = time.time()
-        mod_score(-3)
+        k.caesar = mod_score(-3)
     return
 
 # Powerup for Caesar cipher decryption
@@ -400,7 +407,7 @@ def choose_pwr_4(k):
     else:
         output.set("Caesar cipher decryptor purchased")
         # TODO: MAKE WORTH MORE POINTS
-        mod_score(-3)
+        k.caesar = mod_score(-3)
         # New text field widgets
         caesarText = tk.Label(root, text="cipher-text:")
         caesarText.grid(row=6, column=0)
