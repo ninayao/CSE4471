@@ -3,6 +3,7 @@ import time
 from keylogger import Keylogger
 import os
 import socket
+import select
 from Client import Player
 
 
@@ -26,6 +27,31 @@ def print_text(speed, text):
         time.sleep(speed)
     return text
 
+def game_loop(players):
+    while(1):
+        ready = select.select([players[0].connection], [], [], 0.5)
+        ready1 = select.select([players[1].connection], [], [], 0.5)
+
+        if ready[0]:
+            data = players[0].connection.recv(28).decode()
+            score_string = ""
+            players[0].mod_score(data)
+            for i in range(len(players)):
+                if len(players) > 1:
+                    score_string += str(players[i].score) + " "
+                else:
+                    score_string += str(players[i].score) + " " + "200 "
+            players[0].connection.sendall(bytes(score_string, 'utf-8'))
+        if ready1[0]:
+            data1 = players[1].connection.recv(28).decode()
+            score_string = ""
+            players[1].mod_score(data1)
+            for i in range(len(players)):
+                if len(players) > 1:
+                    score_string += str(players[i].score) + " "
+                else:
+                    score_string += str(players[i].score) + " " + "200 "
+            players[1].connection.sendall(bytes(score_string, 'utf-8'))
 
 if __name__ == '__main__':
     connections = []
@@ -60,22 +86,7 @@ if __name__ == '__main__':
     #game_data = data1 + "######" + data2
     players[0].connection.sendall(bytes(data[1], 'utf-8'))
     players[1].connection.sendall(bytes(data[0], 'utf-8'))
-
-    '''
-    while(1):
-        for player in players:
-            data = player.connection.recv(28).decode()
-            print(data)
-            if True:
-                score_string = ""
-                player.mod_score(data)
-                for i in range(len(players)):
-                    if len(players) > 1:
-                        score_string += str(players[i].score) + " "
-                    else:
-                        score_string += str(players[i].score) + " " + "200 "
-                player.connection.sendall(bytes(score_string, 'utf-8'))
-    '''
+    game_loop(players)
 
 
 

@@ -231,12 +231,16 @@ def process_user_input(user_input):
         outputTxt.config(fg="green3")
         # mod_score(len(word_guess))
         mod_word_num()
-        '''
+        
         SOCKET_CONNECTION.sendall(bytes(str(len(word_guess)), 'utf-8'))
         scores = SOCKET_CONNECTION.recv(1024).decode().split()
-        scr.set(name_var.get() + "'s score: " + str((scores[0])))
-        o_scr.set("Op's score: " + str(scores[1]))
-        '''
+        for score in scores:
+            if score is None:
+                score = "0"
+
+        scr.set("p1's score: " + str((scores[0])))
+        o_scr.set("p2's score: " + str(scores[1]))
+        
         return len(word_guess)
     else:
         output.set("Incorrect :(")
