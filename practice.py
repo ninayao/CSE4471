@@ -22,6 +22,8 @@ test_string = "Far far away, behind the word mountains, far from the countries V
 clock1 = None
 t = None
 instr = None
+caesar_input = ""
+caesar_shift = ""
 text_dict= []
 
 def countdown(count):
@@ -104,7 +106,8 @@ def set_up_gui(event=None):
     opsScore = tk.Label(root, textvariable=o_scr).grid(row=0, column=1, sticky=W)
     pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
     pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="pwr 1").grid(row=0, column=3)
-    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="pwr 2").grid(row=0, column=4)
+    # CHANGED TO 4 TO TEST CAESAR
+    pwr3 = tk.Button(root, command= lambda: choose_pwr_4(k), text="pwr 2").grid(row=0, column=4)
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
     tk.Label(root, text="Your guess:", bg="light blue").grid(row=4, column=1, sticky=W)
@@ -305,6 +308,23 @@ def choose_pwr_3(k):
         mod_score(-3)
     return
 
+def choose_pwr_4(k):
+    global score
+    global start
+    #outputTxt.config(fg="black")
+    if(check_powerup(k)):
+        output.set("You can't use more than 1 power up at a time!")
+    # elif score<100:
+    #     output.set("You don't have enough points!")
+    else:
+        output.set("Caesar cipher decryptor purchased")
+        caesarInput = tk.Entry(root, textvariable=caesar_input)
+        caesarInput.grid(row=5, column=2, columnspan=2, sticky=W)
+        shiftInput = tk.Entry(root, textvariable=caesar_shift)
+        shiftInput.grid(row=5, column=4, columnspan=2, sticky=W)
+        start = time.time()
+        #mod_score(0)
+    return
 
 #opens text document
 def gen_text_dict(text_str):
