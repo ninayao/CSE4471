@@ -29,28 +29,38 @@ def print_text(speed, text):
 
 def game_loop(players):
     while(1):
+        # Select waits for a given socket to be ready to read before trying
         ready = select.select([players[0].connection], [], [], 0.5)
         ready1 = select.select([players[1].connection], [], [], 0.5)
 
+        # Handle messages from player 1
         if ready[0]:
+            # Recieve length of word for score modification
             data = players[0].connection.recv(28).decode()
             score_string = ""
+            # mod score serverside
             players[0].mod_score(data)
+            # Create string to send to clients
             for i in range(len(players)):
                 if len(players) > 1:
+                    # Seperate scores with spaces for easy splitting in client
                     score_string += str(players[i].score) + " "
-                else:
-                    score_string += str(players[i].score) + " " + "200 "
+            # Send score string to client 1        
             players[0].connection.sendall(bytes(score_string, 'utf-8'))
+
+        # Handle messages from player 2
         if ready1[0]:
+             # Recieve length of word for score modification
             data1 = players[1].connection.recv(28).decode()
             score_string = ""
+            # mod score serverside
             players[1].mod_score(data1)
+            # Create string to send to clients
             for i in range(len(players)):
                 if len(players) > 1:
+                    # Seperate scores with spaces for easy splitting in client
                     score_string += str(players[i].score) + " "
-                else:
-                    score_string += str(players[i].score) + " " + "200 "
+            # Send score string to client 2
             players[1].connection.sendall(bytes(score_string, 'utf-8'))
 
 if __name__ == '__main__':
@@ -64,32 +74,44 @@ if __name__ == '__main__':
     port = input("Input the port to open: ")
     s = socket.socket()
     #player_count = input("Input the numbers of players")
+    # Bind user inputted port to server socket
     s.bind(('', int(port)))
+    # Log confirmation of opening connection to console
     print("Socket bound to ", port)
     s.listen(5)
-    # Modify to add more players
     players = []
     data = []
     i = 1
+
+    #loop terminates once the server has recieved two connections
     while len(connections) < 2:
+        # Accept incomming connection from client
         c, addr = s.accept()   
         connections.append(c)
+        # Recieve text from current connection
         data_str = c.recv(1024).decode()
         data.append(data_str)
+        # Log Connection and text to console
         print(str(addr)+": " + data_str)
         #username isn't being sent to server anymore rn so I'm just replacing with numbers
         p = Player("player" + str(i))
+        # add connection to player object
         p.connection = c
+        # create list of players so they are easier to iterate through
         players.append(p)
+        # player number
         i+=1
         
     #game_data = data1 + "######" + data2
+
+    # Send player 1 the text from player 2 and player 2 the text from player 1
     players[0].connection.sendall(bytes(data[1], 'utf-8'))
     players[1].connection.sendall(bytes(data[0], 'utf-8'))
+    # Start game loop that recieves and responds to messages
     game_loop(players)
 
 
-
+    # old code for command line version of game
     # start = None
     # p_bool = False
     # #text = keylog_from_text(mode, string_from_file)
