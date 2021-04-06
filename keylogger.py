@@ -76,9 +76,12 @@ class Keylogger:
         
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
         if self.mode == "random":
-            if random.randint(1, self.get_rand()) == 1:
+            if random.randint(1, 10) == 1 and key != " ":
                 # Creates random character from range of ascii values for standard keyboard operations
-                rand_char = chr(random.randint(32, 126))
+                if key.isupper():
+                    rand_char = chr(random.randint(65, 90))
+                else:
+                    rand_char = chr(random.randint(97, 122))
                 self.logged += rand_char
                 c = rand_char
             # case where 90% chance of correct logging is hit
@@ -99,7 +102,7 @@ class Keylogger:
     def key_pressed(self, event):
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
         if self.mode == "random":
-            if random.randint(1, 10) == 1:
+            if random.randint(1, 10) == 1 and event.name != " ":
                 # Creates random character from range of ascii values for standard keyboard operations
                 rand_char = chr(random.randint(32, 126))
                 self.logged += rand_char
