@@ -6,7 +6,8 @@ import socket
 import select
 from Client import Player
 
-
+end=0
+end1=0
 
 #def keylog_from_text(text):
     #config.k.change_mode(mode)
@@ -31,7 +32,7 @@ def game_loop(players):
     caesarp1 = False
     caesarp2 = False
     while(1):
-        
+        global end, end1
         # Select waits for a given socket to be ready to read before trying
         ready = select.select([players[0].connection], [], [], 0.5)
         ready1 = select.select([players[1].connection], [], [], 0.5)
@@ -40,48 +41,58 @@ def game_loop(players):
         if ready[0]:
             # Recieve length of word for score modification
             data = players[0].connection.recv(28).decode()
-            score_string = ""
-            data_dict = data.split()
-            data = data_dict[0]
-            if len(data_dict) > 1:
-                caesarp2 = True
-            # mod score serverside
-            players[0].mod_score(data)
-            # Create string to send to clients
-            for i in range(len(players)):
-                if len(players) > 1:
-                    # Seperate scores with spaces for easy splitting in client
-                    score_string += str(players[i].score) + " "
-            score_string += "1"
-            if caesarp1:
-                print("Attack from p2")
-                score_string += " cca"
-            # Send score string to client 1
-                    
-            players[0].connection.sendall(bytes(score_string, 'utf-8'))
+            if(data=="end"):
+                end+=1
+            else:
+                score_string = ""
+                data_dict = data.split()
+                data = data_dict[0]
+                if len(data_dict) > 1:
+                    caesarp2 = True
+                # mod score serverside
+                players[0].mod_score(data)
+                # Create string to send to clients
+                for i in range(len(players)):
+                    if len(players) > 1:
+                        # Seperate scores with spaces for easy splitting in client
+                        score_string += str(players[i].score) + " "
+                score_string += "1"
+                if caesarp1:
+                    print("Attack from p2")
+                    score_string += " cca"
+                # Send score string to client 1
+                        
+                players[0].connection.sendall(bytes(score_string, 'utf-8'))
 
         # Handle messages from player 2
         if ready1[0]:
              # Recieve length of word for score modification
             data1 = players[1].connection.recv(28).decode()
-            score_string = ""
-            data_dict = data.split()
-            data = data_dict[0]
-            if len(data_dict) > 1:
-                caesarp1 = True
-            # mod score serverside
-            players[1].mod_score(data1)
-            # Create string to send to clients
-            for i in range(len(players)):
-                if len(players) > 1:
-                    # Seperate scores with spaces for easy splitting in client
-                    score_string += str(players[i].score) + " "
-            score_string += "2"
-            if caesarp2:
-                print("Attack from p1")
-                score_string += " cca"
-            # Send score string to client 2
-            players[1].connection.sendall(bytes(score_string, 'utf-8'))
+            if(data1=="end"):
+                end1+=1
+            else:
+                score_string = ""
+                data_dict = data.split()
+                data = data_dict[0]
+                if len(data_dict) > 1:
+                    caesarp1 = True
+                # mod score serverside
+                players[1].mod_score(data1)
+                # Create string to send to clients
+                for i in range(len(players)):
+                    if len(players) > 1:
+                        # Seperate scores with spaces for easy splitting in client
+                        score_string += str(players[i].score) + " "
+                score_string += "2"
+                if caesarp2:
+                    print("Attack from p1")
+                    score_string += " cca"
+                # Send score string to client 2
+                players[1].connection.sendall(bytes(score_string, 'utf-8'))
+
+        if(end==1 & end1==1):
+            players[0].connection.sendall(bytes("end", 'utf-8'))
+            players[1].connection.sendall(bytes("end", 'utf-8'))
 
 if __name__ == '__main__':
     connections = []
