@@ -126,6 +126,8 @@ def set_up_gui(event=None):
     
     pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ").grid(row=1, column=3)
 
+    pwr6 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\n Attack ").grid(row=1, column=2)
+
     # Text Widgets
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
     tk.Label(root, textvariable=wordNumText, bg="light blue").grid(row=4, column=0, sticky=W)
