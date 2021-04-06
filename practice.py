@@ -103,7 +103,8 @@ def set_up_gui(event=None):
     greeting.destroy()
     instruc.destroy()
     beginButton.destroy()
-    scr.set(name+"'s Score: "+str(score))
+    scr.set("P1's Score: 0")
+    o_scr.set("P2's Score: 0")
     #sets up the game layout
     wordNumText.set("Word #1")
 
@@ -117,9 +118,13 @@ def set_up_gui(event=None):
     # Skip button widget
     pwr1 = tk.Button(root, command= skip, text="skip").grid(row=0, column=2)
     # powerup buttons
-    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="pwr 1").grid(row=0, column=3)
+    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ").grid(row=0, column=3)
     # CHANGED TO 4 TO TEST CAESAR
-    pwr3 = tk.Button(root, command= lambda: choose_pwr_4(k), text="pwr 2").grid(row=0, column=4)
+    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ").grid(row=0, column=4)
+
+    pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor").grid(row=1, column=4)
+    
+    pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ").grid(row=1, column=3)
 
     # Text Widgets
     tk.Label(root, text="Text to Type:", bg="light blue").grid(row=2, sticky=W)
@@ -296,8 +301,8 @@ def process_user_input(user_input):
                 score = "0"
         
         # Set scoreboard 
-        scr.set("p1's score: " + str((scores[0])))
-        o_scr.set("p2's score: " + str(scores[1]))
+        scr.set("P1's score: " + str(scores[0]))
+        o_scr.set("P2's score: " + str(scores[1]))
         
         return len(word_guess)
     
