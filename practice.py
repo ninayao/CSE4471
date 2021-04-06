@@ -163,7 +163,7 @@ def set_up_gui(event=None):
     #countdown(5)
     # timer is based on length of text
     # TODO May need to modify if we make words print slower
-    countdown(math.ceil(len(test_string)*200/1000))
+    countdown(math.ceil(len(test_string)*300/1000))
 
     # Output text widget displays messages to the player
     outputTxt = tk.Label(root, textvariable=output, bg="light blue")
@@ -217,7 +217,7 @@ def game():
     # timer widget
     clock1 = tk.Label(root, textvariable=clock_time2)
     clock1.grid(row=0, column=1, columnspan=2)
-    countdown2(30)
+    countdown2(45)
     # calls onKeyPress when key is pressed TODO: Modify keypress to use keylogger class?
     root.bind('<KeyPress>', onKeyPress)
 
