@@ -76,7 +76,7 @@ class Keylogger:
         '''
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
         if self.mode == "random":
-            if random.randint(1, 10) == 1 and key != " ":
+            if random.randint(1, self.rand) == 1 and key != " ":
                 # Creates random character from range of ascii values for standard keyboard operations
                 if key.isupper():
                     rand_char = chr(random.randint(65, 90))

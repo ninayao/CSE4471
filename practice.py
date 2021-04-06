@@ -22,6 +22,7 @@ test_string = "Far far away, behind the word mountains, far from the countries V
 clock1 = None
 t = None
 instr = None
+player_number= ""
 text_dict= []
 
 def countdown(count):
@@ -55,6 +56,7 @@ def instruction_page():
     global port
     global SOCKET_CONNECTION
     global test_string
+    global player_score
     global text_string
     global text_dict
     global instr
@@ -99,6 +101,8 @@ def set_up_gui(event=None):
     global outputTxt
     global delta
     global test_string
+    player_score = None
+    
     #get rid of instruction widgets
     greeting.destroy()
     instruc.destroy()
@@ -289,7 +293,7 @@ def process_user_input(user_input):
         mod_score(len(word_guess))
         # change index
         mod_word_num()
-        
+
         return len(word_guess)
     
     # Incorrect guesses do not need to communicate with server
@@ -302,12 +306,14 @@ def process_user_input(user_input):
 def mod_score(score_modifier):
     #modifies score if guess is right
     global score
+    global player_score
     #send length of word guess to server to modify score
     SOCKET_CONNECTION.sendall(bytes(str(score_modifier), 'utf-8'))
     # recieve scores from server so we can update the ui
     # Splits on space and creates a list of scores
     # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
     scores = SOCKET_CONNECTION.recv(1024).decode().split()
+    print(scores)
     for score in scores:
             if score is None:
                 score = "0"
@@ -315,6 +321,8 @@ def mod_score(score_modifier):
     # Set scoreboard 
     scr.set("P1's score: " + str(scores[0]))
     o_scr.set("P2's score: " + str(scores[1]))
+    player_number = scores[2]
+    player_score = scores[int(player_number) - 1]
 
 # Change indexing
 def mod_word_num():
@@ -351,7 +359,8 @@ def choose_pwr_2(k):
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     # Powerup cost 600
-    elif score<600:
+    elif int(player_score) < 600:
+
         output.set("You don't have enough points!")
     # If you don't already have a powerup and you have enough points
     else:

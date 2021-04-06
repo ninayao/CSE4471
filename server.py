@@ -45,7 +45,9 @@ def game_loop(players):
                 if len(players) > 1:
                     # Seperate scores with spaces for easy splitting in client
                     score_string += str(players[i].score) + " "
-            # Send score string to client 1        
+            score_string += "1"
+            # Send score string to client 1
+                    
             players[0].connection.sendall(bytes(score_string, 'utf-8'))
 
         # Handle messages from player 2
@@ -60,6 +62,7 @@ def game_loop(players):
                 if len(players) > 1:
                     # Seperate scores with spaces for easy splitting in client
                     score_string += str(players[i].score) + " "
+            score_string += "2"
             # Send score string to client 2
             players[1].connection.sendall(bytes(score_string, 'utf-8'))
 
