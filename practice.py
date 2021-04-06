@@ -22,6 +22,7 @@ test_string = "Far far away, behind the word mountains, far from the countries V
 clock1 = None
 t = None
 instr = None
+caesar_count = 0
 player_number= ""
 text_dict= []
 
@@ -61,6 +62,7 @@ def instruction_page():
     global text_dict
     global instr
     global clock1
+    
     global t
 
     t.destroy()
@@ -280,6 +282,7 @@ def process_user_input(k, user_input):
     #checks if guess is right
     global wordNum
     global text_dict
+    global caesar_count
     # get guess form user_inpot field
     word_guess = user_input
     # front end indexing starts at 1 but of course it starts at 0 in the code
@@ -290,7 +293,8 @@ def process_user_input(k, user_input):
         guessed_indices.append(index)
         output.set("Correct!")
         outputTxt.config(fg="green3")
-        k.caesar = mod_score(len(word_guess))
+        caesar_count += mod_score(len(word_guess))
+        print(caesar_count)
         # change index
         mod_word_num()
 
@@ -303,7 +307,8 @@ def process_user_input(k, user_input):
         return 0
 
 def send_attack(k):
-    mod_score("-4 cca")
+    global caesar_count
+    caesar_count += mod_score("-4 cca")
 
 def mod_score(score_modifier):
     #modifies score if guess is right
@@ -362,6 +367,7 @@ def skip():
 def choose_pwr_2(k):
     global score
     global start
+    global caesar_count
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
@@ -374,13 +380,14 @@ def choose_pwr_2(k):
         output.set("Changing mode to NONE for 5 seconds")
         k.change_mode("none")
         start = time.time()
-        k.caesar = mod_score(-6)
+        caesar_count += mod_score(-6)
     return
 
 # Powerup for Reduced randomization
 def choose_pwr_3(k):
     global score
     global start
+    global caesar_count
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
@@ -392,13 +399,14 @@ def choose_pwr_3(k):
         output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
         k.change_rand(20)
         start = time.time()
-        k.caesar = mod_score(-3)
+        caesar_count += mod_score(-3)
     return
 
 # Powerup for Caesar cipher decryption
 def choose_pwr_4(k):
     global score
     global start
+    global caesar_count
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
@@ -407,7 +415,7 @@ def choose_pwr_4(k):
     else:
         output.set("Caesar cipher decryptor purchased")
         # TODO: MAKE WORTH MORE POINTS
-        k.caesar = mod_score(-3)
+        caesar_count += mod_score(-3)
         # New text field widgets
         caesarText = tk.Label(root, text="cipher-text:")
         caesarText.grid(row=6, column=0)

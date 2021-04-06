@@ -65,8 +65,8 @@ def game_loop(players):
              # Recieve length of word for score modification
             data1 = players[1].connection.recv(28).decode()
             score_string = ""
-            data_dict = data.split()
-            data = data_dict[0]
+            data_dict = data1.split()
+            data1 = data_dict[0]
             if len(data_dict) > 1:
                 caesarp1 = True
             # mod score serverside
