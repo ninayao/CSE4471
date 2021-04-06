@@ -289,22 +289,6 @@ def process_user_input(user_input):
         mod_score(len(word_guess))
         # change index
         mod_word_num()
-
-        # #send length of word guess to server to modify score
-        # SOCKET_CONNECTION.sendall(bytes(str(len(word_guess)), 'utf-8'))
-        # # recieve scores from server so we can update the ui
-        # # Splits on space and creates a list of scores
-        # # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
-        # scores = SOCKET_CONNECTION.recv(1024).decode().split()
-        
-        # # Covering case where one of the players has not scored yet
-        # for score in scores:
-        #     if score is None:
-        #         score = "0"
-        
-        # # Set scoreboard 
-        # scr.set("P1's score: " + str(scores[0]))
-        # o_scr.set("P2's score: " + str(scores[1]))
         
         return len(word_guess)
     
