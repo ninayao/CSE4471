@@ -45,6 +45,7 @@ def end_game():
     global word_guess
     global p1score
     global scores
+    global player_score
     global yourScore, opsScore, clock, pwr1, pwr2, pwr3, textToType, wordCount, guessBox, textEntry, canvas, submitBtn, outputTxt 
     global caesarText, caesarInput, shiftText, shiftInput, caesarButton
 
@@ -94,6 +95,7 @@ def end_game():
         opscr=scores[0]
 
     #determine who won the game
+
     if(p1score>int(opscr)):
         gameover.set("GameOver! You Win!")
     elif(p1score<int(opscr)):
@@ -122,6 +124,7 @@ def instruction_page():
     global SOCKET_CONNECTION
     global test_string
     global player_score
+    player_score = 0
     global text_string
     global text_dict
     global instr
@@ -395,14 +398,21 @@ def process_user_input(k, user_input):
 
 def show_hint(k):
     global caesar_count
-    key = next(iter(k.shifted))
-
-    output.set("Word at index " + str(key) + " is shifted by " + str(k.shifted[key]))
-    k.shifted.pop(key)
-    caesar_count += mod_score(-2)
+    global player_score
+    if int(player_score) < 200:
+        output.set("You don't have enough points!")
+    else:
+        key = next(iter(k.shifted))
+        output.set("Word at index " + str(key) + " is shifted by " + str(k.shifted[key]))
+        k.shifted.pop(key)
+        caesar_count += mod_score(-2)
 def send_attack(k):
     global caesar_count
-    caesar_count += mod_score("-4 cca")
+    global player_score
+    if int(player_score) < 800:
+        output.set("You don't have enough points!")
+    else:
+        caesar_count += mod_score("-800 cca")
 
 def mod_score(score_modifier):
     #modifies score if guess is right
@@ -453,17 +463,26 @@ def reset(k):
 
 # Skip button increases index
 def skip():
+    global player_score
+    global caesar_count
     #outputTxt.config(fg="black")
-    output.set("Skipped!")
-    # Increase index by one
-    mod_word_num()
-    return
+    
+    if int(player_score) < 100:
+
+        output.set("You don't have enough points!")
+    else:
+        # Increase index by one
+        mod_word_num()
+        output.set("Skipped!")
+        caesar_count += mod_score(-1)
+        return
 
 # Powerup for perfect text printing with no errors
 def choose_pwr_2(k):
     global score
     global start
     global caesar_count
+    global player_score
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
@@ -484,6 +503,7 @@ def choose_pwr_3(k):
     global score
     global start
     global caesar_count
+    global player_score
     #outputTxt.config(fg="black")
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
@@ -504,18 +524,17 @@ def choose_pwr_4(k):
     global start
     global caesar_count
     global usedCaesar
+    global player_score
     global caesarText, caesarInput, shiftText, shiftInput, caesarButton
     #outputTxt.config(fg="black")
-    if(check_powerup(k)):
-        output.set("You can't use more than 1 power up at a time!")
-    # elif score<100:
-    #     output.set("You don't have enough points!")
+    if int(player_score) < 1000:
+         output.set("You don't have enough points!")
     else:
         usedCaesar+=1
         print("bought cipher "+str(usedCaesar))
         output.set("Caesar cipher decryptor purchased")
         # TODO: MAKE WORTH MORE POINTS
-        caesar_count += mod_score(-3)
+        caesar_count += mod_score(-10)
         # New text field widgets
         caesarText = tk.Label(root, text="cipher-text:")
         caesarText.grid(row=6, column=0)
