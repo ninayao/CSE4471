@@ -188,24 +188,25 @@ def set_up_gui(event=None):
     opsScore = tk.Label(root, textvariable=o_scr)
     opsScore.grid(row=0, column=1, sticky=W)
 
+    tk.Label(root, text="", bg="light blue").grid(row=1)
     # Skip button widget
-    pwr1 = tk.Button(root, command= skip, text="skip")
-    pwr1.grid(row=0, column=2)
+    pwr1 = tk.Button(root, command= skip, text="skip", height=2, width=7)
+    pwr1.place(relx=0.5, rely=0.015)
     # powerup buttons
-    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ")
-    pwr2.grid(row=0, column=3)
+    pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ", height=2, width=7)
+    pwr2.place(relx=0.65, rely=0.015)
     # CHANGED TO 4 TO TEST CAESAR
-    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ")
-    pwr3.grid(row=0, column=4)
+    pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ", height=2, width=7)
+    pwr3.place(relx=0.8, rely=0.015)
 
-    pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor")
-    pwr4.grid(row=1, column=4)
-    
-    pwr5 = tk.Button(root, command= lambda: show_hint(k), text="Shift\n Hint ")
-    pwr5.grid(row=1, column=3)
+    pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor", height=2, width=7)
+    pwr4.place(relx=0.5, rely=0.115)
 
-    pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ")
-    pwr6.grid(row=1, column=2)
+    pwr5 = tk.Button(root, command= lambda: show_hint(k), text="Shift\n Hint ", height=2, width=7)
+    pwr5.place(relx=0.65, rely=0.115)
+
+    pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ", height=2, width=7)
+    pwr6.place(relx=0.8, rely=0.115)
 
     # Text Widgets
     textToType = tk.Label(root, text="Text to Type:", bg="light blue")
@@ -259,7 +260,7 @@ def set_up_gui(event=None):
     # Output text widget displays messages to the player
     outputTxt = tk.Label(root, textvariable=output, bg="light blue")
     outputTxt.grid(row=8, column=1, columnspan=4)
-    root.grid_rowconfigure(1, minsize=20) 
+    root.grid_rowconfigure(1, minsize=70) 
     root.grid_rowconfigure(3, minsize=20)  
     root.grid_rowconfigure(5, minsize=30)  
     root.grid_rowconfigure(7, minsize=20)
@@ -592,7 +593,6 @@ portEntry.grid(row=6)
 portEntry.place(relx=0.5, rely=0.75,anchor=CENTER)
 
 root.bind('<Return>',get_name)
-
 
 #start game loop
 root.mainloop()
