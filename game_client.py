@@ -198,7 +198,6 @@ def set_up_gui(event=None):
     # powerup buttons
     pwr2 = tk.Button(root, command= lambda: choose_pwr_2(k), text="Perfect\n Output ", height=2, width=7)
     pwr2.place(relx=0.65, rely=0.015)
-    # CHANGED TO 4 TO TEST CAESAR
     pwr3 = tk.Button(root, command= lambda: choose_pwr_3(k), text="Less\n  Random  ", height=2, width=7)
     pwr3.place(relx=0.8, rely=0.015)
 
@@ -219,13 +218,10 @@ def set_up_gui(event=None):
     guessBox = tk.Label(root, text="Your guess:", bg="light blue") 
     guessBox.grid(row=4, column=1, sticky=W)
 
-    #tk.Label(root, text="Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then", bg="yellow", wraplength=420, justify=LEFT).grid(row=2, columnspan=6)
     
     
     #print out text by char
-    #canvas = tk.Canvas(root, width=650, height=200)
     canvas.grid(row=3, column=0, columnspan = 5, sticky = tk.W+tk.E)
-    #canvas_text = canvas.create_text(10, 10, anchor=tk.NW, width=640)
 
 
     print_text(k, test_string, "")
@@ -255,9 +251,8 @@ def set_up_gui(event=None):
     clock = tk.Label(root, textvariable=clock_time)
     clock.grid(row=8, column=0)
 
-    #countdown(5)
+    
     # timer is based on length of text
-    # TODO May need to modify if we make words print slower
     countdown(math.ceil(len(test_string)*400/1000))
 
     # Output text widget displays messages to the player
@@ -326,7 +321,6 @@ def print_text(k, test_string, s):
             reset(k)
             start = None
     if len(test_string) > 0:
-        #print(k.get_rand())
         c = test_string[0]
         # Obscure character based on rules in keylogger
         k.caesar = caesar_count
@@ -362,9 +356,6 @@ def word_entered(k):
     input = text_var.get()
     #print(input)
     text_var.set("")
-    # SOCKET_CONNECTION.sendall(bytes(input, 'utf-8'))
-    # recieved = SOCKET_CONNECTION.recv(1024).decode()
-    # output.set(recieved)
     process_user_input(k, input)
 
 # make this send data over connection???
@@ -425,7 +416,6 @@ def mod_score(score_modifier):
     # Splits on space and creates a list of scores
     # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
     scores = SOCKET_CONNECTION.recv(1024).decode().split()
-    #p1score += score_modifier*100
     print(scores)
     for score in scores:
             if score is None:
