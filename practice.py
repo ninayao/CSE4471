@@ -312,7 +312,7 @@ def game():
     # timer widget
     clock1 = tk.Label(root, textvariable=clock_time2)
     clock1.grid(row=0, column=1, columnspan=2)
-    countdown2(20)
+    countdown2(60)
     # calls onKeyPress when key is pressed TODO: Modify keypress to use keylogger class?
     root.bind('<KeyPress>', onKeyPress)
 
