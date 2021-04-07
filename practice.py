@@ -87,18 +87,18 @@ def end_game():
 
     opscr = 0
     #set a score for the player and the opponent
-    if(p1score==int(scores[0])):
-        scrmsg.set("Your score: "+str(p1score) +"\nOpponent's score: "+str(scores[1]))
+    if(int(player_score)==int(scores[0])):
+        scrmsg.set("Your score: "+str(player_score) +"\nOpponent's score: "+str(scores[1]))
         opscr=scores[1]
     else:
-        scrmsg.set("Your score: "+str(p1score) +"\nOpponent's score: "+str(scores[0]))
+        scrmsg.set("Your score: "+str(player_score) +"\nOpponent's score: "+str(scores[0]))
         opscr=scores[0]
 
     #determine who won the game
 
-    if(p1score>int(opscr)):
+    if(int(player_score)>int(opscr)):
         gameover.set("GameOver! You Win!")
-    elif(p1score<int(opscr)):
+    elif(int(player_score)<int(opscr)):
         gameover.set("GameOver! You Lose :(")
     else:
         gameover.set("GameOver! It's a Tie!")      
