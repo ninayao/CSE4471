@@ -258,7 +258,7 @@ def set_up_gui(event=None):
     #countdown(5)
     # timer is based on length of text
     # TODO May need to modify if we make words print slower
-    countdown(math.ceil(len(test_string)*300/1000))
+    countdown(math.ceil(len(test_string)*400/1000))
 
     # Output text widget displays messages to the player
     outputTxt = tk.Label(root, textvariable=output, bg="light blue")
@@ -334,7 +334,7 @@ def print_text(k, test_string, s):
         caesar_count = k.caesar 
         s += new_c
         canvas.itemconfigure(canvas_text, text=s)
-        canvas.after(200, print_text, k, test_string[1:], s)  
+        canvas.after(400, print_text, k, test_string[1:], s)  
 
 def caesar_decrypt(event=None):
     return_string = ""
