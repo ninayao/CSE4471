@@ -62,6 +62,7 @@ def game_loop(players):
                 if caesarp1:
                     print("Attack from p2")
                     score_string += " cca"
+                    caesarp1 = False
                 # Send score string to client 1
                         
                 players[0].connection.sendall(bytes(score_string, 'utf-8'))
@@ -91,6 +92,7 @@ def game_loop(players):
                 if caesarp2:
                     print("Attack from p1")
                     score_string += " cca"
+                    caesarp2 = False
                 # Send score string to client 2
                 players[1].connection.sendall(bytes(score_string, 'utf-8'))
 
