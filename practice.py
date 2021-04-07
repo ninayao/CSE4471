@@ -342,10 +342,15 @@ def caesar_decrypt(event=None):
     # Decryption
     for i in range(len(cipher_text)):
         a = ord(cipher_text[i])
-        if((a - shift_size) < 33):
-            return_string += chr((a - shift_size) + 94)
+        if a > 96:
+            return_string += chr((ord(cipher_text[i]) + (-1 * shift_size) - 65) % 26 + 65)
         else:
-            return_string += chr(a - shift_size)
+            return_string += chr((ord(cipher_text[i]) + (-1 * shift_size) - 97) % 26 + 97)
+        # if((a - shift_size) < 33):
+        #     return_string += chr((a - shift_size) + 94)
+        # else:
+        #     return_string += chr(a - shift_size)
+
     # Print the decrypted string to the output widget        
     output.set(return_string)
 

