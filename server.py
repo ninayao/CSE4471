@@ -99,7 +99,7 @@ def game_loop(players):
         if(end==1 & end1==1):
             players[0].connection.sendall(bytes("end", 'utf-8'))
             players[1].connection.sendall(bytes("end", 'utf-8'))
-
+            
 if __name__ == '__main__':
     connections = []
     if len(sys.argv) > 1:
