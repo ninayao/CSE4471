@@ -49,6 +49,8 @@ def game_loop(players):
                 data = data_dict[0]
                 if len(data_dict) > 1:
                     caesarp2 = True
+                else:
+                    caesarp2 = False
                 # mod score serverside
                 players[0].mod_score(data)
                 # Create string to send to clients
@@ -76,6 +78,8 @@ def game_loop(players):
                 data1 = data_dict[0]
                 if len(data_dict) > 1:
                     caesarp1 = True
+                else:
+                    caesarp1 = False
                 # mod score serverside
                 players[1].mod_score(data1)
                 # Create string to send to clients

@@ -6,10 +6,12 @@ import string
 
 class Keylogger:
     mode = []
+    shifted = {}
     logged = ""
     rand = 10
-    caesar = False
+    caesar = 0
     shift = 0
+    index = 0
 
 
 
@@ -33,6 +35,9 @@ class Keylogger:
         self.mode = mode
         self.rand = 10
         self.caesar = 0
+        self.index = 0
+        self.shifted = {}
+        self.sameword = False
 
     # Format output string so that it isn't one long line
     def create_output_string(self):
@@ -59,6 +64,22 @@ class Keylogger:
 
     def simulated_key_pressed(self, key):
         c = key
+        if key == " ":
+            self.index +=1
+            self.logged += key
+            self.sameword = False
+            if self.caesar > 0:
+                self.caesar -= 1
+
+        elif self.caesar != 0:
+            if not self.sameword:
+                self.shift = random.randint(1,26)
+                self.shifted[self.index] = self.shift
+            self.sameword = True
+            c = self.caesar_cipher_encrypt(c, random.randint(1,26))
+            self.logged += c
+
+            
         '''
         if self.caesar != 0:
             if key == " " or key in string.punctuation:
@@ -74,8 +95,9 @@ class Keylogger:
         elif key == " ":
             self.logged += key
         '''
+
         # Random mode, each character has a 10% chance of being a random character, rather than the one pressed
-        if self.mode == "random":
+        if self.mode == "random" and self.caesar < 1:
             if random.randint(1, self.rand) == 1 and key != " ":
                 # Creates random character from range of ascii values for standard keyboard operations
                 if key.isupper():

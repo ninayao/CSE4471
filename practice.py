@@ -201,7 +201,7 @@ def set_up_gui(event=None):
     pwr4 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Caesar\nDecryptor")
     pwr4.grid(row=1, column=4)
     
-    pwr5 = tk.Button(root, command= lambda: choose_pwr_4(k), text="Shift\n Hint ")
+    pwr5 = tk.Button(root, command= lambda: show_hint(k), text="Shift\n Hint ")
     pwr5.grid(row=1, column=3)
 
     pwr6 = tk.Button(root, command= lambda: send_attack(k), text="Caesar\n Attack ")
@@ -308,12 +308,13 @@ def game():
     # timer widget
     clock1 = tk.Label(root, textvariable=clock_time2)
     clock1.grid(row=0, column=1, columnspan=2)
-    countdown2(10)
+    countdown2(20)
     # calls onKeyPress when key is pressed TODO: Modify keypress to use keylogger class?
     root.bind('<KeyPress>', onKeyPress)
 
 def print_text(k, test_string, s):
     global start
+    global caesar_count
     end = time.time()
     if start is not None:
         elapsed = end - start
@@ -324,7 +325,9 @@ def print_text(k, test_string, s):
         #print(k.get_rand())
         c = test_string[0]
         # Obscure character based on rules in keylogger
+        k.caesar = caesar_count
         new_c = k.simulated_key_pressed(c)
+        caesar_count = k.caesar 
         s += new_c
         canvas.itemconfigure(canvas_text, text=s)
         canvas.after(200, print_text, k, test_string[1:], s)  
@@ -384,6 +387,13 @@ def process_user_input(k, user_input):
         output.set("Incorrect :(")
         return 0
 
+def show_hint(k):
+    global caesar_count
+    key = next(iter(k.shifted))
+
+    output.set("Word at index " + str(key) + " is shifted by " + str(k.shifted[key]))
+    k.shifted.pop(key)
+    caesar_count += mod_score(-2)
 def send_attack(k):
     global caesar_count
     caesar_count += mod_score("-4 cca")
@@ -399,7 +409,7 @@ def mod_score(score_modifier):
     # Splits on space and creates a list of scores
     # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
     scores = SOCKET_CONNECTION.recv(1024).decode().split()
-    p1score+=score_modifier*100
+    #p1score += score_modifier*100
     print(scores)
     for score in scores:
             if score is None:
