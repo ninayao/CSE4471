@@ -145,8 +145,6 @@ def instruction_page():
 
     # recieve the other players text
     test_string = SOCKET_CONNECTION.recv(1024).decode()
-    print(test_string)
-
     #seperate words into dict for easy checking of guesses
     gen_text_dict(test_string)
 
@@ -376,7 +374,6 @@ def process_user_input(k, user_input):
         output.set("Correct!")
         outputTxt.config(fg="green3")
         caesar_count += mod_score(len(word_guess))
-        print(caesar_count)
         # change index
         mod_word_num()
 
@@ -391,7 +388,7 @@ def show_hint(k):
     global caesar_count
     global player_score
     if int(player_score) < 200:
-        output.set("You don't have enough points!")
+        output.set("You don't have enough points! Need 200!")
     else:
         key = next(iter(k.shifted))
         output.set("Word at index " + str(key) + " is shifted by " + str(k.shifted[key]))
@@ -401,7 +398,7 @@ def send_attack(k):
     global caesar_count
     global player_score
     if int(player_score) < 800:
-        output.set("You don't have enough points!")
+        output.set("You don't have enough points! Need 800!")
     else:
         caesar_count += mod_score("-800 cca")
 
@@ -416,7 +413,6 @@ def mod_score(score_modifier):
     # Splits on space and creates a list of scores
     # Note that this means the player will not see themself listed as player1 in the ui, the first player to connect is p1 and second is p2
     scores = SOCKET_CONNECTION.recv(1024).decode().split()
-    print(scores)
     for score in scores:
             if score is None:
                 score = "0"
@@ -459,7 +455,7 @@ def skip():
     
     if int(player_score) < 100:
 
-        output.set("You don't have enough points!")
+        output.set("You don't have enough points! Need 100!")
     else:
         # Increase index by one
         mod_word_num()
@@ -479,7 +475,7 @@ def choose_pwr_2(k):
     # Powerup cost 600
     elif int(player_score) < 600:
 
-        output.set("You don't have enough points!")
+        output.set("You don't have enough points! Need 600!")
     # If you don't already have a powerup and you have enough points
     else:
         output.set("Changing mode to NONE for 5 seconds")
@@ -498,14 +494,14 @@ def choose_pwr_3(k):
     if(check_powerup(k)):
         output.set("You can't use more than 1 power up at a time!")
     # Powerup cost 300
-    elif int(player_score) < 300:
-        output.set("You don't have enough points!")
+    elif int(player_score) < 400:
+        output.set("You don't have enough points! Need 400!")
     # If you don't already have a powerup and you have enough points
     else:
         output.set("Decreasing probabilty of flipped characters to 1/20 for 5 seconds")
         k.change_rand(20)
         start = time.time()
-        caesar_count += mod_score(-3)
+        caesar_count += mod_score(-4)
     return
 
 # Powerup for Caesar cipher decryption
@@ -518,7 +514,7 @@ def choose_pwr_4(k):
     global caesarText, caesarInput, shiftText, shiftInput, caesarButton
     #outputTxt.config(fg="black")
     if int(player_score) < 1000:
-         output.set("You don't have enough points!")
+         output.set("You don't have enough points! Need 1000!")
     else:
         usedCaesar+=1
         print("bought cipher "+str(usedCaesar))
